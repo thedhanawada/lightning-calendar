@@ -501,9 +501,15 @@ export class VanillaDOMRenderer {
       const dateEl = target.closest('[data-date]');
       if (dateEl && !eventEl) {
         const dateStr = dateEl.getAttribute('data-date'); // YYYY-MM-DD format
+        console.log('Clicked data-date:', dateStr);
+
         // Parse date in local timezone to avoid UTC conversion issues
         const [year, month, day] = dateStr.split('-').map(Number);
         const localDate = new Date(year, month - 1, day);
+        console.log('Parsed to Date object:', localDate);
+        console.log('Date parts - year:', year, 'month:', month, 'day:', day);
+        console.log('localDate.getDate():', localDate.getDate());
+
         this.handleDateClick(localDate);
         return;
       }
@@ -653,6 +659,14 @@ export class VanillaDOMRenderer {
    * Show create event dialog
    */
   showCreateEventDialog(date) {
+    console.log('showCreateEventDialog called with date:', date);
+    console.log('date.getFullYear():', date.getFullYear());
+    console.log('date.getMonth():', date.getMonth());
+    console.log('date.getDate():', date.getDate());
+
+    const inputValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    console.log('Modal input value will be:', inputValue);
+
     // Remove existing modal if any
     this.removeModal();
 
@@ -672,7 +686,7 @@ export class VanillaDOMRenderer {
             </div>
             <div class="form-group">
               <label for="event-date">Date *</label>
-              <input type="date" id="event-date" class="form-control" value="${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}" required>
+              <input type="date" id="event-date" class="form-control" value="${inputValue}" required>
             </div>
             <div class="form-group">
               <label>
