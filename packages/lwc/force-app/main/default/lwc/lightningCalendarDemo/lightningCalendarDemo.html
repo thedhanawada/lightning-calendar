@@ -1,0 +1,39 @@
+<template>
+    <lightning-card title="Lightning Calendar Demo" icon-name="standard:event">
+        <!-- Control Buttons -->
+        <div slot="actions">
+            <lightning-button-group>
+                <lightning-button
+                    label="Add Event"
+                    onclick={handleAddEvent}
+                    icon-name="utility:add"
+                ></lightning-button>
+                <lightning-button
+                    label="Clear Events"
+                    onclick={handleClearEvents}
+                    icon-name="utility:clear"
+                ></lightning-button>
+                <lightning-button
+                    label="Load Sample Events"
+                    onclick={handleLoadSampleEvents}
+                    icon-name="utility:refresh"
+                ></lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <!-- Calendar Component -->
+        <div class="slds-p-around_medium">
+            <c-lightning-calendar
+                events={events}
+                view="month"
+                height="600px"
+                show-weekends
+                fixed-week-count
+                oneventclick={handleEventClick}
+                ondateclick={handleDateClick}
+                onnavigate={handleNavigate}
+                onviewchange={handleViewChange}
+            ></c-lightning-calendar>
+        </div>
+    </lightning-card>
+</template>

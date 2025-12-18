@@ -1,0 +1,57 @@
+<template>
+    <div class="calendar-month-view">
+        <!-- Day Headers -->
+        <div class="calendar-day-headers">
+            <template for:each={dayHeaders} for:item="dayName">
+                <div key={dayName} class="calendar-day-header">
+                    {dayName}
+                </div>
+            </template>
+        </div>
+
+        <!-- Weeks Grid -->
+        <div class="calendar-weeks">
+            <template for:each={weeks} for:item="week">
+                <div key={week.weekNumber} class="calendar-week">
+                    <template for:each={week.days} for:item="day">
+                        <div
+                            key={day.date}
+                            class={day.classes}
+                            data-date={day.date}
+                            onclick={handleDateClick}
+                        >
+                            <!-- Day Number -->
+                            <div class="calendar-day-number">
+                                {day.dayOfMonth}
+                            </div>
+
+                            <!-- Events -->
+                            <template if:true={day.events}>
+                                <div class="calendar-day-events">
+                                    <!-- Visible Events (max 3) -->
+                                    <template for:each={day.visibleEvents} for:item="event">
+                                        <div
+                                            key={event.id}
+                                            class={event.classes}
+                                            data-event-id={event.id}
+                                            onclick={handleEventClick}
+                                        >
+                                            {event.title}
+                                        </div>
+                                    </template>
+
+                                    <!-- More Events Indicator -->
+                                    <template if:true={day.hasMore}>
+                                        <div class="calendar-event-more">
+                                            +{day.moreCount} more
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

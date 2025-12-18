@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Lightning Calendar</masterLabel>
+    <description>Enterprise-grade calendar component for Salesforce Lightning</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
+            <property name="height" type="String" default="600px" label="Calendar Height" description="Height of the calendar container"/>
+            <property name="view" type="String" default="month" label="Default View" description="Default calendar view (month, week, day, list)" datasource="month,week,day,list"/>
+            <property name="weekStartsOn" type="Integer" default="0" label="Week Starts On" description="First day of week (0=Sunday, 1=Monday)" min="0" max="6"/>
+            <property name="showWeekNumbers" type="Boolean" default="false" label="Show Week Numbers"/>
+            <property name="showWeekends" type="Boolean" default="true" label="Show Weekends"/>
+            <property name="fixedWeekCount" type="Boolean" default="true" label="Fixed Week Count" description="Always show 6 weeks in month view"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,71 @@
+.lightning-calendar {
+    display: flex;
+    flex-direction: column;
+    background: var(--lwc-colorBackground, #ffffff);
+    border: 1px solid var(--lwc-colorBorder, #dddbda);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+/* Header Styles */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--lwc-colorBackgroundAlt, #fafaf9);
+    border-bottom: 1px solid var(--lwc-colorBorder, #dddbda);
+    gap: 1rem;
+}
+
+.calendar-navigation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.today-button {
+    margin: 0 0.25rem;
+}
+
+.calendar-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--lwc-colorTextDefault, #181818);
+    margin: 0;
+}
+
+.calendar-view-switcher {
+    display: flex;
+}
+
+/* Calendar Body */
+.calendar-body {
+    flex: 1;
+    overflow: auto;
+    padding: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-header {
+        flex-wrap: wrap;
+    }
+
+    .calendar-title {
+        width: 100%;
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+
+    .calendar-navigation {
+        flex: 1;
+    }
+
+    .calendar-view-switcher {
+        flex: 1;
+        justify-content: flex-end;
+    }
+}

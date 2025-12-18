@@ -1,0 +1,37 @@
+{
+  "name": "@lightning-calendar/lwc",
+  "version": "0.1.0",
+  "description": "Lightning Web Component wrapper for Lightning Calendar",
+  "main": "force-app/main/default/lwc/lightningCalendar/lightningCalendar.js",
+  "scripts": {
+    "lint": "eslint **/lwc/**",
+    "test": "npm run test:unit",
+    "test:unit": "sfdx-lwc-jest",
+    "test:unit:watch": "sfdx-lwc-jest --watch",
+    "test:unit:debug": "sfdx-lwc-jest --debug",
+    "test:unit:coverage": "sfdx-lwc-jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/lightning-calendar.git"
+  },
+  "keywords": [
+    "salesforce",
+    "lightning",
+    "lwc",
+    "calendar",
+    "scheduler",
+    "locker-service"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@lightning-calendar/core": "file:../../"
+  },
+  "devDependencies": {
+    "@salesforce/eslint-config-lwc": "^3.5.0",
+    "@salesforce/sfdx-lwc-jest": "^3.0.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-import": "^2.28.0"
+  }
+}

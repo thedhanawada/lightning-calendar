@@ -1,0 +1,102 @@
+<template>
+    <div class="lightning-calendar" style={containerStyle}>
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+            <!-- Navigation Controls -->
+            <div class="calendar-navigation">
+                <lightning-button-icon
+                    icon-name="utility:chevronleft"
+                    variant="border-filled"
+                    alternative-text="Previous"
+                    title="Previous"
+                    onclick={handlePreviousClick}
+                ></lightning-button-icon>
+
+                <lightning-button
+                    label="Today"
+                    onclick={handleTodayClick}
+                    class="today-button"
+                ></lightning-button>
+
+                <lightning-button-icon
+                    icon-name="utility:chevronright"
+                    variant="border-filled"
+                    alternative-text="Next"
+                    title="Next"
+                    onclick={handleNextClick}
+                ></lightning-button-icon>
+            </div>
+
+            <!-- Calendar Title -->
+            <h2 class="calendar-title">{calendarTitle}</h2>
+
+            <!-- View Switcher -->
+            <div class="calendar-view-switcher">
+                <lightning-button-group>
+                    <lightning-button
+                        label="Month"
+                        data-view="month"
+                        variant={monthViewVariant}
+                        onclick={handleViewButtonClick}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Week"
+                        data-view="week"
+                        variant={weekViewVariant}
+                        onclick={handleViewButtonClick}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Day"
+                        data-view="day"
+                        variant={dayViewVariant}
+                        onclick={handleViewButtonClick}
+                    ></lightning-button>
+                    <lightning-button
+                        label="List"
+                        data-view="list"
+                        variant={listViewVariant}
+                        onclick={handleViewButtonClick}
+                    ></lightning-button>
+                </lightning-button-group>
+            </div>
+        </div>
+
+        <!-- Calendar Body -->
+        <div class="calendar-body">
+            <!-- Month View -->
+            <template if:true={isMonthView}>
+                <c-lightning-calendar-month-view
+                    view-data={viewData}
+                    ondateclick={handleDateClick}
+                    oneventclick={handleEventClick}
+                ></c-lightning-calendar-month-view>
+            </template>
+
+            <!-- Week View -->
+            <template if:true={isWeekView}>
+                <c-lightning-calendar-week-view
+                    view-data={viewData}
+                    ondateclick={handleDateClick}
+                    oneventclick={handleEventClick}
+                ></c-lightning-calendar-week-view>
+            </template>
+
+            <!-- Day View -->
+            <template if:true={isDayView}>
+                <c-lightning-calendar-day-view
+                    view-data={viewData}
+                    ondateclick={handleDateClick}
+                    oneventclick={handleEventClick}
+                ></c-lightning-calendar-day-view>
+            </template>
+
+            <!-- List View -->
+            <template if:true={isListView}>
+                <c-lightning-calendar-list-view
+                    view-data={viewData}
+                    oneventclick={handleEventClick}
+                ></c-lightning-calendar-list-view>
+            </template>
+        </div>
+    </div>
+</template>
