@@ -195,24 +195,44 @@ body {
 }
 
 .calendar-nav-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: 6px;
   height: 36px;
+  padding: 0 var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background: white;
   color: var(--gray-700);
   cursor: pointer;
-  transition: background 0.2s;
-  font-size: 20px;
-  font-weight: 700;
+  transition: all 0.2s;
+  font-size: var(--font-size-base);
+  font-weight: 500;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .calendar-nav-btn:hover {
   background: var(--gray-100);
+  border-color: var(--gray-400);
+}
+
+.calendar-nav-btn .nav-icon {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.calendar-nav-today {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-nav-today:hover {
+  background: var(--primary-700);
+  border-color: var(--primary-700);
 }
 
 .calendar-title {
