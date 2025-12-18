@@ -101,18 +101,20 @@ export class VanillaDOMRenderer {
     const navigation = this.createElement('div', 'calendar-navigation');
 
     // Previous button
-    const prevBtn = this.createElement('button', 'calendar-nav-btn', '‹');
+    const prevBtn = this.createElement('button', 'calendar-nav-btn');
+    prevBtn.innerHTML = '<span class="nav-icon">←</span> Previous';
     prevBtn.setAttribute('data-action', 'previous');
     prevBtn.setAttribute('aria-label', 'Previous');
     navigation.appendChild(prevBtn);
 
     // Today button
-    const todayBtn = this.createElement('button', 'calendar-nav-btn', 'Today');
+    const todayBtn = this.createElement('button', 'calendar-nav-btn calendar-nav-today', 'Today');
     todayBtn.setAttribute('data-action', 'today');
     navigation.appendChild(todayBtn);
 
     // Next button
-    const nextBtn = this.createElement('button', 'calendar-nav-btn', '›');
+    const nextBtn = this.createElement('button', 'calendar-nav-btn');
+    nextBtn.innerHTML = 'Next <span class="nav-icon">→</span>';
     nextBtn.setAttribute('data-action', 'next');
     nextBtn.setAttribute('aria-label', 'Next');
     navigation.appendChild(nextBtn);
@@ -190,8 +192,17 @@ export class VanillaDOMRenderer {
           dayCell.classList.add('weekend');
         }
 
-        // Set data attributes
-        dayCell.setAttribute('data-date', day.date.toISOString());
+        // Set data attributes - use local date string to avoid timezone issues
+        const year = day.date.getFullYear();
+        const month = String(day.date.getMonth() + 1).padStart(2, '0');
+        const dayOfMonth = String(day.date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${dayOfMonth}`;
+        dayCell.setAttribute('data-date', dateStr);
+
+        // DEBUG: Log mismatch
+        if (day.dayOfMonth !== day.date.getDate()) {
+          console.warn(`Date mismatch! dayOfMonth: ${day.dayOfMonth}, date.getDate(): ${day.date.getDate()}, stored: ${dateStr}`);
+        }
 
         // Day number
         const dayNumber = this.createElement('div', 'calendar-day-number', day.dayOfMonth.toString());
@@ -489,8 +500,17 @@ export class VanillaDOMRenderer {
       // Date click
       const dateEl = target.closest('[data-date]');
       if (dateEl && !eventEl) {
-        const dateStr = dateEl.getAttribute('data-date');
-        this.handleDateClick(new Date(dateStr));
+        const dateStr = dateEl.getAttribute('data-date'); // YYYY-MM-DD format
+        console.log('Clicked data-date:', dateStr);
+
+        // Parse date in local timezone to avoid UTC conversion issues
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const localDate = new Date(year, month - 1, day);
+        console.log('Parsed to Date object:', localDate);
+        console.log('Date parts - year:', year, 'month:', month, 'day:', day);
+        console.log('localDate.getDate():', localDate.getDate());
+
+        this.handleDateClick(localDate);
         return;
       }
     };
@@ -639,6 +659,14 @@ export class VanillaDOMRenderer {
    * Show create event dialog
    */
   showCreateEventDialog(date) {
+    console.log('showCreateEventDialog called with date:', date);
+    console.log('date.getFullYear():', date.getFullYear());
+    console.log('date.getMonth():', date.getMonth());
+    console.log('date.getDate():', date.getDate());
+
+    const inputValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    console.log('Modal input value will be:', inputValue);
+
     // Remove existing modal if any
     this.removeModal();
 
@@ -658,7 +686,7 @@ export class VanillaDOMRenderer {
             </div>
             <div class="form-group">
               <label for="event-date">Date *</label>
-              <input type="date" id="event-date" class="form-control" value="${date.toISOString().split('T')[0]}" required>
+              <input type="date" id="event-date" class="form-control" value="${inputValue}" required>
             </div>
             <div class="form-group">
               <label>
