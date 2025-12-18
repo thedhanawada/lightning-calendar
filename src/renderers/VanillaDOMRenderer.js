@@ -196,7 +196,13 @@ export class VanillaDOMRenderer {
         const year = day.date.getFullYear();
         const month = String(day.date.getMonth() + 1).padStart(2, '0');
         const dayOfMonth = String(day.date.getDate()).padStart(2, '0');
-        dayCell.setAttribute('data-date', `${year}-${month}-${dayOfMonth}`);
+        const dateStr = `${year}-${month}-${dayOfMonth}`;
+        dayCell.setAttribute('data-date', dateStr);
+
+        // DEBUG: Log mismatch
+        if (day.dayOfMonth !== day.date.getDate()) {
+          console.warn(`Date mismatch! dayOfMonth: ${day.dayOfMonth}, date.getDate(): ${day.date.getDate()}, stored: ${dateStr}`);
+        }
 
         // Day number
         const dayNumber = this.createElement('div', 'calendar-day-number', day.dayOfMonth.toString());
