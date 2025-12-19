@@ -372,49 +372,63 @@ export class VanillaDOMRenderer {
         }
       }
 
-      // Add events as absolutely positioned elements
-      const nonAllDayEvents = day.events.filter(event => !event.allDay);
+      // Get overlap groups for this day to properly position events
+      const overlapGroups = this.calendar.eventStore.getOverlapGroups(day.date, true);
 
-      nonAllDayEvents.forEach(event => {
-        const eventEl = this.createElement('div', 'calendar-week-event');
-        eventEl.textContent = event.title;
-        eventEl.setAttribute('data-event-id', event.id);
+      // Process each overlap group
+      overlapGroups.forEach(group => {
+        // Calculate positions for all events in this group
+        const positions = this.calendar.eventStore.calculateEventPositions(group);
 
-        // Calculate position and height
-        const startHour = event.start.getHours();
-        const startMinute = event.start.getMinutes();
-        const endHour = event.end.getHours();
-        const endMinute = event.end.getMinutes();
+        // Render each event with proper positioning
+        group.forEach(event => {
+          const eventEl = this.createElement('div', 'calendar-week-event');
+          eventEl.textContent = event.title;
+          eventEl.setAttribute('data-event-id', event.id);
 
-        // Calculate slot positions more precisely
-        const startSlot = (startHour * slotsPerHour) + (startMinute / intervalMinutes);
-        const endSlot = (endHour * slotsPerHour) + (endMinute / intervalMinutes);
-        const slotHeight = 48; // Height of each time slot in pixels
+          // Calculate vertical position and height
+          const startHour = event.start.getHours();
+          const startMinute = event.start.getMinutes();
+          const endHour = event.end.getHours();
+          const endMinute = event.end.getMinutes();
 
-        // Position the event
-        eventEl.style.position = 'absolute';
-        eventEl.style.top = `${startSlot * slotHeight + 2}px`;
-        eventEl.style.height = `${Math.max((endSlot - startSlot) * slotHeight - 4, 20)}px`;
-        eventEl.style.left = '2px';
-        eventEl.style.right = '2px';
-        eventEl.style.zIndex = '1';
+          // Calculate slot positions more precisely
+          const startSlot = (startHour * slotsPerHour) + (startMinute / intervalMinutes);
+          const endSlot = (endHour * slotsPerHour) + (endMinute / intervalMinutes);
+          const slotHeight = 48; // Height of each time slot in pixels
 
-        // Apply color
-        if (event.metadata && event.metadata.colorClass) {
-          const colorMap = {
-            'event-blue': '#1a73e8',
-            'event-green': '#34a853',
-            'event-orange': '#fa903e',
-            'event-red': '#ea4335',
-            'event-purple': '#9334e6'
-          };
-          const color = colorMap[event.metadata.colorClass] || '#1e88e5';
-          eventEl.style.backgroundColor = color;
-        } else if (event.backgroundColor) {
-          eventEl.style.backgroundColor = event.backgroundColor;
-        }
+          // Get horizontal position from overlap calculation
+          const position = positions.get(event.id);
+          const columnWidth = 100 / position.totalColumns;
+          const leftOffset = position.column * columnWidth;
 
-        dayColumn.appendChild(eventEl);
+          // Position the event
+          eventEl.style.position = 'absolute';
+          eventEl.style.top = `${startSlot * slotHeight + 2}px`;
+          eventEl.style.height = `${Math.max((endSlot - startSlot) * slotHeight - 4, 20)}px`;
+
+          // Horizontal positioning for side-by-side display
+          eventEl.style.left = `${leftOffset}%`;
+          eventEl.style.width = `calc(${columnWidth}% - 4px)`;
+          eventEl.style.zIndex = '1';
+
+          // Apply color
+          if (event.metadata && event.metadata.colorClass) {
+            const colorMap = {
+              'event-blue': '#1a73e8',
+              'event-green': '#34a853',
+              'event-orange': '#fa903e',
+              'event-red': '#ea4335',
+              'event-purple': '#9334e6'
+            };
+            const color = colorMap[event.metadata.colorClass] || '#1e88e5';
+            eventEl.style.backgroundColor = color;
+          } else if (event.backgroundColor) {
+            eventEl.style.backgroundColor = event.backgroundColor;
+          }
+
+          dayColumn.appendChild(eventEl);
+        });
       });
 
       timeGrid.appendChild(dayColumn);
@@ -534,51 +548,63 @@ export class VanillaDOMRenderer {
       }
     }
 
-    // Add events as absolutely positioned elements
-    const timedEvents = viewData.hours.reduce((acc, hour) => {
-      return acc.concat(hour.events);
-    }, []);
+    // Get overlap groups for this day to properly position events
+    const overlapGroups = this.calendar.eventStore.getOverlapGroups(viewData.date, true);
 
-    timedEvents.forEach(event => {
-      const eventEl = this.createElement('div', 'calendar-day-event');
-      eventEl.textContent = event.title;
-      eventEl.setAttribute('data-event-id', event.id);
+    // Process each overlap group
+    overlapGroups.forEach(group => {
+      // Calculate positions for all events in this group
+      const positions = this.calendar.eventStore.calculateEventPositions(group);
 
-      // Calculate position and height
-      const startHour = event.start.getHours();
-      const startMinute = event.start.getMinutes();
-      const endHour = event.end.getHours();
-      const endMinute = event.end.getMinutes();
+      // Render each event with proper positioning
+      group.forEach(event => {
+        const eventEl = this.createElement('div', 'calendar-day-event');
+        eventEl.textContent = event.title;
+        eventEl.setAttribute('data-event-id', event.id);
 
-      // Calculate slot positions more precisely
-      const startSlot = (startHour * slotsPerHour) + (startMinute / intervalMinutes);
-      const endSlot = (endHour * slotsPerHour) + (endMinute / intervalMinutes);
-      const slotHeight = 48; // Height of each time slot in pixels
+        // Calculate vertical position and height
+        const startHour = event.start.getHours();
+        const startMinute = event.start.getMinutes();
+        const endHour = event.end.getHours();
+        const endMinute = event.end.getMinutes();
 
-      // Position the event
-      eventEl.style.position = 'absolute';
-      eventEl.style.top = `${startSlot * slotHeight + 2}px`;
-      eventEl.style.height = `${Math.max((endSlot - startSlot) * slotHeight - 4, 20)}px`;
-      eventEl.style.left = '2px';
-      eventEl.style.right = '2px';
-      eventEl.style.zIndex = '1';
+        // Calculate slot positions more precisely
+        const startSlot = (startHour * slotsPerHour) + (startMinute / intervalMinutes);
+        const endSlot = (endHour * slotsPerHour) + (endMinute / intervalMinutes);
+        const slotHeight = 48; // Height of each time slot in pixels
 
-      // Apply color
-      if (event.metadata && event.metadata.colorClass) {
-        const colorMap = {
-          'event-blue': '#1a73e8',
-          'event-green': '#34a853',
-          'event-orange': '#fa903e',
-          'event-red': '#ea4335',
-          'event-purple': '#9334e6'
-        };
-        const color = colorMap[event.metadata.colorClass] || '#1a73e8';
-        eventEl.style.backgroundColor = color;
-      } else if (event.backgroundColor) {
-        eventEl.style.backgroundColor = event.backgroundColor;
-      }
+        // Get horizontal position from overlap calculation
+        const position = positions.get(event.id);
+        const columnWidth = 100 / position.totalColumns;
+        const leftOffset = position.column * columnWidth;
 
-      dayColumn.appendChild(eventEl);
+        // Position the event
+        eventEl.style.position = 'absolute';
+        eventEl.style.top = `${startSlot * slotHeight + 2}px`;
+        eventEl.style.height = `${Math.max((endSlot - startSlot) * slotHeight - 4, 20)}px`;
+
+        // Horizontal positioning for side-by-side display
+        eventEl.style.left = `${leftOffset}%`;
+        eventEl.style.width = `calc(${columnWidth}% - 4px)`;
+        eventEl.style.zIndex = '1';
+
+        // Apply color
+        if (event.metadata && event.metadata.colorClass) {
+          const colorMap = {
+            'event-blue': '#1a73e8',
+            'event-green': '#34a853',
+            'event-orange': '#fa903e',
+            'event-red': '#ea4335',
+            'event-purple': '#9334e6'
+          };
+          const color = colorMap[event.metadata.colorClass] || '#1a73e8';
+          eventEl.style.backgroundColor = color;
+        } else if (event.backgroundColor) {
+          eventEl.style.backgroundColor = event.backgroundColor;
+        }
+
+        dayColumn.appendChild(eventEl);
+      });
     });
 
     timeGrid.appendChild(dayColumn);

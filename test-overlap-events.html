@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lightning Calendar - Overlap Events Test</title>
+  <link rel="stylesheet" href="demo/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="main-header">
+      <h1>Overlapping Events Test</h1>
+      <p>Events should display side-by-side when they overlap</p>
+    </header>
+
+    <div id="calendar-container" class="calendar-container"></div>
+  </div>
+
+  <script type="module">
+    import { Calendar, Event } from './demo/src/index.js';
+    import { VanillaDOMRenderer } from './demo/src/renderers/VanillaDOMRenderer.js';
+
+    // Initialize calendar in week view
+    const container = document.getElementById('calendar-container');
+    const calendar = new Calendar({
+      view: 'week',
+      date: new Date()
+    });
+
+    // Initialize renderer
+    const renderer = new VanillaDOMRenderer(container, calendar);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Create overlapping events for testing
+
+    // Group 1: Two events overlapping (should be side-by-side)
+    calendar.addEvent(new Event({
+      id: 'event-1',
+      title: 'Meeting A',
+      start: new Date(today.getTime() + 9 * 60 * 60 * 1000),  // 9:00 AM
+      end: new Date(today.getTime() + 10 * 60 * 60 * 1000),   // 10:00 AM
+      metadata: { colorClass: 'event-blue' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-2',
+      title: 'Meeting B',
+      start: new Date(today.getTime() + 9.5 * 60 * 60 * 1000), // 9:30 AM
+      end: new Date(today.getTime() + 10.5 * 60 * 60 * 1000),  // 10:30 AM
+      metadata: { colorClass: 'event-red' }
+    }));
+
+    // Group 2: Three events overlapping (should split into 3 columns)
+    calendar.addEvent(new Event({
+      id: 'event-3',
+      title: 'Workshop',
+      start: new Date(today.getTime() + 14 * 60 * 60 * 1000),  // 2:00 PM
+      end: new Date(today.getTime() + 16 * 60 * 60 * 1000),    // 4:00 PM
+      metadata: { colorClass: 'event-green' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-4',
+      title: 'Training',
+      start: new Date(today.getTime() + 14.5 * 60 * 60 * 1000), // 2:30 PM
+      end: new Date(today.getTime() + 15.5 * 60 * 60 * 1000),   // 3:30 PM
+      metadata: { colorClass: 'event-orange' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-5',
+      title: 'Review',
+      start: new Date(today.getTime() + 15 * 60 * 60 * 1000),   // 3:00 PM
+      end: new Date(today.getTime() + 16 * 60 * 60 * 1000),     // 4:00 PM
+      metadata: { colorClass: 'event-purple' }
+    }));
+
+    // Group 3: Non-overlapping events (should take full width)
+    calendar.addEvent(new Event({
+      id: 'event-6',
+      title: 'Lunch',
+      start: new Date(today.getTime() + 12 * 60 * 60 * 1000),  // 12:00 PM
+      end: new Date(today.getTime() + 13 * 60 * 60 * 1000),    // 1:00 PM
+      metadata: { colorClass: 'event-blue' }
+    }));
+
+    // Group 4: Complex overlap scenario
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    calendar.addEvent(new Event({
+      id: 'event-7',
+      title: 'All Day Planning',
+      start: new Date(tomorrow.getTime() + 8 * 60 * 60 * 1000),  // 8:00 AM
+      end: new Date(tomorrow.getTime() + 17 * 60 * 60 * 1000),   // 5:00 PM
+      metadata: { colorClass: 'event-blue' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-8',
+      title: 'Morning Standup',
+      start: new Date(tomorrow.getTime() + 9 * 60 * 60 * 1000),  // 9:00 AM
+      end: new Date(tomorrow.getTime() + 9.5 * 60 * 60 * 1000),  // 9:30 AM
+      metadata: { colorClass: 'event-green' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-9',
+      title: 'Client Call',
+      start: new Date(tomorrow.getTime() + 10 * 60 * 60 * 1000), // 10:00 AM
+      end: new Date(tomorrow.getTime() + 11 * 60 * 60 * 1000),   // 11:00 AM
+      metadata: { colorClass: 'event-red' }
+    }));
+
+    calendar.addEvent(new Event({
+      id: 'event-10',
+      title: 'Team Sync',
+      start: new Date(tomorrow.getTime() + 10.5 * 60 * 60 * 1000), // 10:30 AM
+      end: new Date(tomorrow.getTime() + 11.5 * 60 * 60 * 1000),   // 11:30 AM
+      metadata: { colorClass: 'event-orange' }
+    }));
+
+    console.log('Overlap test events created:');
+    console.log('Today:');
+    console.log('- 9:00-10:00 & 9:30-10:30 (2 overlapping)');
+    console.log('- 12:00-13:00 (single event, full width)');
+    console.log('- 14:00-16:00 & 14:30-15:30 & 15:00-16:00 (3 overlapping)');
+    console.log('Tomorrow:');
+    console.log('- Complex overlap with all-day background event');
+  </script>
+</body>
+</html>
