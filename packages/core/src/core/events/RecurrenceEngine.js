@@ -7,11 +7,11 @@ import { DateUtils } from '../calendar/DateUtils.js';
 export class RecurrenceEngine {
   /**
    * Expand a recurring event into individual occurrences
-   * @param {Event} event - The recurring event
+   * @param {import('./Event.js').Event} event - The recurring event
    * @param {Date} rangeStart - Start of the expansion range
    * @param {Date} rangeEnd - End of the expansion range
-   * @param {number} maxOccurrences - Maximum number of occurrences to generate
-   * @returns {Array<Object>} Array of occurrence objects with start/end dates
+   * @param {number} [maxOccurrences=365] - Maximum number of occurrences to generate
+   * @returns {import('../../types.js').EventOccurrence[]} Array of occurrence objects with start/end dates
    */
   static expandEvent(event, rangeStart, rangeEnd, maxOccurrences = 365) {
     if (!event.recurring || !event.recurrenceRule) {
@@ -61,8 +61,8 @@ export class RecurrenceEngine {
 
   /**
    * Parse an RRULE string into a rule object
-   * @param {string} ruleString - RRULE string (e.g., "FREQ=DAILY;INTERVAL=1;COUNT=10")
-   * @returns {Object} Parsed rule object
+   * @param {string|import('../../types.js').RecurrenceRule} ruleString - RRULE string (e.g., "FREQ=DAILY;INTERVAL=1;COUNT=10") or rule object
+   * @returns {import('../../types.js').RecurrenceRule} Parsed rule object
    */
   static parseRule(ruleString) {
     const rule = {

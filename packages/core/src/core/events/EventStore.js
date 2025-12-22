@@ -9,24 +9,31 @@ import { RecurrenceEngine } from './RecurrenceEngine.js';
 export class EventStore {
   constructor() {
     // Primary storage - Map for O(1) ID lookups
+    /** @type {Map<string, Event>} */
     this.events = new Map();
 
     // Indices for efficient queries
     this.indices = {
-      byDate: new Map(), // Date string -> Set of event IDs
-      byMonth: new Map(), // YYYY-MM -> Set of event IDs
-      recurring: new Set() // Set of recurring event IDs
+      /** @type {Map<string, Set<string>>} Date string -> Set of event IDs */
+      byDate: new Map(),
+      /** @type {Map<string, Set<string>>} YYYY-MM -> Set of event IDs */
+      byMonth: new Map(),
+      /** @type {Set<string>} Set of recurring event IDs */
+      recurring: new Set()
     };
 
     // Change tracking
+    /** @type {number} */
     this.version = 0;
+    /** @type {Set<import('../../types.js').EventListener>} */
     this.listeners = new Set();
   }
 
   /**
    * Add an event to the store
-   * @param {Event} event - The event to add
+   * @param {Event|import('../../types.js').EventData} event - The event to add
    * @returns {Event} The added event
+   * @throws {Error} If event with same ID already exists
    */
   addEvent(event) {
     if (!(event instanceof Event)) {
@@ -56,8 +63,9 @@ export class EventStore {
   /**
    * Update an existing event
    * @param {string} eventId - The event ID
-   * @param {Object} updates - Properties to update
+   * @param {Partial<import('../../types.js').EventData>} updates - Properties to update
    * @returns {Event} The updated event
+   * @throws {Error} If event not found
    */
   updateEvent(eventId, updates) {
     const existingEvent = this.events.get(eventId);
@@ -118,7 +126,7 @@ export class EventStore {
   /**
    * Get an event by ID
    * @param {string} eventId - The event ID
-   * @returns {Event|null}
+   * @returns {Event|null} The event or null if not found
    */
   getEvent(eventId) {
     return this.events.get(eventId) || null;
@@ -126,7 +134,7 @@ export class EventStore {
 
   /**
    * Get all events
-   * @returns {Event[]}
+   * @returns {Event[]} Array of all events
    */
   getAllEvents() {
     return Array.from(this.events.values());
@@ -134,8 +142,8 @@ export class EventStore {
 
   /**
    * Query events with filters
-   * @param {Object} filters - Query filters
-   * @returns {Event[]}
+   * @param {import('../../types.js').QueryFilters} [filters={}] - Query filters
+   * @returns {Event[]} Filtered events
    */
   queryEvents(filters = {}) {
     let results = Array.from(this.events.values());
@@ -199,7 +207,7 @@ export class EventStore {
   /**
    * Get events for a specific date
    * @param {Date} date - The date to query
-   * @returns {Event[]}
+   * @returns {Event[]} Events occurring on the date, sorted by start time
    */
   getEventsForDate(date) {
     const dateStr = date.toDateString();
@@ -220,7 +228,7 @@ export class EventStore {
    * Get events that overlap with a given time range
    * @param {Date} start - Start time
    * @param {Date} end - End time
-   * @param {string} excludeId - Optional event ID to exclude (useful when checking for conflicts)
+   * @param {string} [excludeId=null] - Optional event ID to exclude (useful when checking for conflicts)
    * @returns {Event[]} Array of overlapping events
    */
   getOverlappingEvents(start, end, excludeId = null) {

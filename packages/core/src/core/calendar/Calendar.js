@@ -8,6 +8,10 @@ import { DateUtils } from './DateUtils.js';
  * Framework agnostic, Locker Service compatible
  */
 export class Calendar {
+  /**
+   * Create a new Calendar instance
+   * @param {import('../../types.js').CalendarConfig} [config={}] - Configuration options
+   */
   constructor(config = {}) {
     // Initialize configuration
     this.config = {
@@ -60,8 +64,8 @@ export class Calendar {
 
   /**
    * Set the calendar view
-   * @param {string} viewType - The view type ('month', 'week', 'day', 'list')
-   * @param {Date} date - Optional date to navigate to
+   * @param {import('../../types.js').ViewType} viewType - The view type ('month', 'week', 'day', 'list')
+   * @param {Date} [date=null] - Optional date to navigate to
    */
   setView(viewType, date = null) {
     this.state.setView(viewType);
@@ -78,7 +82,7 @@ export class Calendar {
 
   /**
    * Get the current view type
-   * @returns {string}
+   * @returns {import('../../types.js').ViewType} The current view type
    */
   getView() {
     return this.state.get('view');
@@ -143,8 +147,8 @@ export class Calendar {
 
   /**
    * Add an event
-   * @param {Object|Event} eventData - Event data or Event instance
-   * @returns {Event} The added event
+   * @param {import('../events/Event.js').Event|import('../../types.js').EventData} eventData - Event data or Event instance
+   * @returns {import('../events/Event.js').Event} The added event
    */
   addEvent(eventData) {
     const event = this.eventStore.addEvent(eventData);
@@ -260,7 +264,7 @@ export class Calendar {
 
   /**
    * Get the current view's data
-   * @returns {Object} View-specific data
+   * @returns {import('../../types.js').MonthViewData|import('../../types.js').WeekViewData|import('../../types.js').DayViewData|import('../../types.js').ListViewData|null} View-specific data
    */
   getViewData() {
     const view = this.state.get('view');

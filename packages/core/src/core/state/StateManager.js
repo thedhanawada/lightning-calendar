@@ -3,6 +3,10 @@
  * Implements an immutable state pattern with change notifications
  */
 export class StateManager {
+  /**
+   * Create a new StateManager instance
+   * @param {Partial<import('../../types.js').CalendarState>} [initialState={}] - Initial state values
+   */
   constructor(initialState = {}) {
     this.state = {
       // Current view configuration
@@ -71,7 +75,7 @@ export class StateManager {
 
   /**
    * Get the current state
-   * @returns {Object} Current state (frozen)
+   * @returns {import('../../types.js').CalendarState} Current state (frozen)
    */
   getState() {
     return Object.freeze({ ...this.state });
@@ -79,8 +83,8 @@ export class StateManager {
 
   /**
    * Get a specific state value
-   * @param {string} key - The state key
-   * @returns {*} The state value
+   * @param {keyof import('../../types.js').CalendarState} key - The state key
+   * @returns {any} The state value
    */
   get(key) {
     return this.state[key];

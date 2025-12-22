@@ -29,8 +29,8 @@ export class DateUtils {
   /**
    * Get the start of a week
    * @param {Date} date - The date
-   * @param {number} weekStartsOn - 0 = Sunday, 1 = Monday, etc.
-   * @returns {Date}
+   * @param {number} [weekStartsOn=0] - 0 = Sunday, 1 = Monday, etc.
+   * @returns {Date} Start of the week
    */
   static startOfWeek(date, weekStartsOn = 0) {
     const result = new Date(date);

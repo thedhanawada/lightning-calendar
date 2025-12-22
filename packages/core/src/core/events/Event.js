@@ -4,6 +4,11 @@
  * Locker Service compatible
  */
 export class Event {
+  /**
+   * Create a new Event instance
+   * @param {import('../../types.js').EventData} eventData - Event data object
+   * @throws {Error} If required fields are missing or invalid
+   */
   constructor({
     id,
     title,
@@ -64,6 +69,7 @@ export class Event {
 
   /**
    * Get event duration in milliseconds
+   * @returns {number} Duration in milliseconds
    */
   get duration() {
     if (!this._cache.duration) {
@@ -74,6 +80,7 @@ export class Event {
 
   /**
    * Get event duration in minutes
+   * @returns {number} Duration in minutes
    */
   get durationMinutes() {
     return Math.floor(this.duration / (1000 * 60));
@@ -81,6 +88,7 @@ export class Event {
 
   /**
    * Get event duration in hours
+   * @returns {number} Duration in hours
    */
   get durationHours() {
     return this.duration / (1000 * 60 * 60);
@@ -88,6 +96,7 @@ export class Event {
 
   /**
    * Check if this is a multi-day event
+   * @returns {boolean} True if event spans multiple days
    */
   get isMultiDay() {
     if (!this._cache.hasOwnProperty('isMultiDay')) {
@@ -100,6 +109,7 @@ export class Event {
 
   /**
    * Check if event is recurring
+   * @returns {boolean} True if event is recurring
    */
   isRecurring() {
     return this.recurring && this.recurrenceRule !== null;
@@ -107,8 +117,8 @@ export class Event {
 
   /**
    * Check if event occurs on a specific date
-   * @param {Date} date - The date to check
-   * @returns {boolean}
+   * @param {Date|string} date - The date to check
+   * @returns {boolean} True if event occurs on the given date
    */
   occursOn(date) {
     if (!(date instanceof Date)) {
@@ -140,22 +150,26 @@ export class Event {
 
   /**
    * Check if this event overlaps with another event
-   * @param {Event} otherEvent - The other event to check
-   * @returns {boolean}
+   * @param {Event|{start: Date, end: Date}} otherEvent - The other event or time range to check
+   * @returns {boolean} True if events overlap
+   * @throws {Error} If otherEvent is not an Event instance or doesn't have start/end
    */
   overlaps(otherEvent) {
-    if (!(otherEvent instanceof Event)) {
-      throw new Error('Parameter must be an Event instance');
+    if (otherEvent instanceof Event) {
+      // Events don't overlap if one ends before the other starts
+      return !(this.end <= otherEvent.start || this.start >= otherEvent.end);
+    } else if (otherEvent && otherEvent.start && otherEvent.end) {
+      // Allow checking against time ranges
+      return !(this.end <= otherEvent.start || this.start >= otherEvent.end);
+    } else {
+      throw new Error('Parameter must be an Event instance or have start/end properties');
     }
-
-    // Events don't overlap if one ends before the other starts
-    return !(this.end <= otherEvent.start || this.start >= otherEvent.end);
   }
 
   /**
    * Check if event contains a specific datetime
-   * @param {Date} datetime - The datetime to check
-   * @returns {boolean}
+   * @param {Date|string} datetime - The datetime to check
+   * @returns {boolean} True if the datetime falls within the event
    */
   contains(datetime) {
     if (!(datetime instanceof Date)) {
@@ -166,8 +180,8 @@ export class Event {
 
   /**
    * Clone the event with optional updates
-   * @param {Object} updates - Properties to update in the clone
-   * @returns {Event}
+   * @param {Partial<import('../../types.js').EventData>} [updates={}] - Properties to update in the clone
+   * @returns {Event} New Event instance with updated properties
    */
   clone(updates = {}) {
     return new Event({
@@ -192,7 +206,7 @@ export class Event {
 
   /**
    * Convert event to plain object
-   * @returns {Object}
+   * @returns {import('../../types.js').EventData} Plain object representation of the event
    */
   toObject() {
     return {
@@ -215,8 +229,8 @@ export class Event {
 
   /**
    * Create Event from plain object
-   * @param {Object} obj - Plain object with event properties
-   * @returns {Event}
+   * @param {import('../../types.js').EventData} obj - Plain object with event properties
+   * @returns {Event} New Event instance
    */
   static fromObject(obj) {
     return new Event(obj);
@@ -225,7 +239,7 @@ export class Event {
   /**
    * Compare events for equality
    * @param {Event} other - The other event
-   * @returns {boolean}
+   * @returns {boolean} True if events are equal
    */
   equals(other) {
     if (!(other instanceof Event)) return false;
