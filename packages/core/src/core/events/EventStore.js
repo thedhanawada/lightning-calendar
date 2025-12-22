@@ -1,13 +1,15 @@
 import { Event } from './Event.js';
 import { DateUtils } from '../calendar/DateUtils.js';
 import { RecurrenceEngine } from './RecurrenceEngine.js';
+import { PerformanceOptimizer } from '../performance/PerformanceOptimizer.js';
 
 /**
  * EventStore - Manages calendar events with efficient querying
  * Uses Map for O(1) lookups and spatial indexing concepts for date queries
+ * Now with performance optimizations for large datasets
  */
 export class EventStore {
-  constructor() {
+  constructor(config = {}) {
     // Primary storage - Map for O(1) ID lookups
     /** @type {Map<string, Event>} */
     this.events = new Map();
@@ -19,8 +21,19 @@ export class EventStore {
       /** @type {Map<string, Set<string>>} YYYY-MM -> Set of event IDs */
       byMonth: new Map(),
       /** @type {Set<string>} Set of recurring event IDs */
-      recurring: new Set()
+      recurring: new Set(),
+      /** @type {Map<string, Set<string>>} Category -> Set of event IDs */
+      byCategory: new Map(),
+      /** @type {Map<string, Set<string>>} Status -> Set of event IDs */
+      byStatus: new Map()
     };
+
+    // Performance optimizer
+    this.optimizer = new PerformanceOptimizer(config.performance);
+
+    // Batch operation state
+    this.isBatchMode = false;
+    this.batchNotifications = [];
 
     // Change tracking
     /** @type {number} */
@@ -36,28 +49,41 @@ export class EventStore {
    * @throws {Error} If event with same ID already exists
    */
   addEvent(event) {
-    if (!(event instanceof Event)) {
-      event = new Event(event);
-    }
+    return this.optimizer.measure('addEvent', () => {
+      if (!(event instanceof Event)) {
+        event = new Event(event);
+      }
 
-    if (this.events.has(event.id)) {
-      throw new Error(`Event with id ${event.id} already exists`);
-    }
+      if (this.events.has(event.id)) {
+        throw new Error(`Event with id ${event.id} already exists`);
+      }
 
-    // Store the event
-    this.events.set(event.id, event);
+      // Store the event
+      this.events.set(event.id, event);
 
-    // Update indices
-    this._indexEvent(event);
+      // Cache the event
+      this.optimizer.cache(event.id, event, 'event');
 
-    // Notify listeners
-    this._notifyChange({
-      type: 'add',
-      event,
-      version: ++this.version
+      // Update indices
+      this._indexEvent(event);
+
+      // Notify listeners (batch if in batch mode)
+      if (this.isBatchMode) {
+        this.batchNotifications.push({
+          type: 'add',
+          event,
+          version: ++this.version
+        });
+      } else {
+        this._notifyChange({
+          type: 'add',
+          event,
+          version: ++this.version
+        });
+      }
+
+      return event;
     });
-
-    return event;
   }
 
   /**
@@ -129,7 +155,21 @@ export class EventStore {
    * @returns {Event|null} The event or null if not found
    */
   getEvent(eventId) {
-    return this.events.get(eventId) || null;
+    // Check cache first
+    const cached = this.optimizer.getFromCache(eventId, 'event');
+    if (cached) {
+      return cached;
+    }
+
+    // Get from store
+    const event = this.events.get(eventId) || null;
+
+    // Cache if found
+    if (event) {
+      this.optimizer.cache(eventId, event, 'event');
+    }
+
+    return event;
   }
 
   /**
@@ -503,7 +543,13 @@ export class EventStore {
    * @private
    */
   _indexEvent(event) {
-    // Index by date(s)
+    // Check if should use lazy indexing for large date ranges
+    if (this.optimizer.shouldUseLazyIndexing(event)) {
+      this._indexEventLazy(event);
+      return;
+    }
+
+    // Normal indexing for reasonable date ranges
     const startDate = DateUtils.startOfDay(event.start);
     const endDate = DateUtils.endOfDay(event.end);
 
@@ -536,7 +582,102 @@ export class EventStore {
       currentMonth.setMonth(currentMonth.getMonth() + 1);
     }
 
+    // Index by categories
+    if (event.categories && event.categories.length > 0) {
+      event.categories.forEach(category => {
+        if (!this.indices.byCategory.has(category)) {
+          this.indices.byCategory.set(category, new Set());
+        }
+        this.indices.byCategory.get(category).add(event.id);
+      });
+    }
+
+    // Index by status
+    if (event.status) {
+      if (!this.indices.byStatus.has(event.status)) {
+        this.indices.byStatus.set(event.status, new Set());
+      }
+      this.indices.byStatus.get(event.status).add(event.id);
+    }
+
     // Index recurring events
+    if (event.recurring) {
+      this.indices.recurring.add(event.id);
+    }
+  }
+
+  /**
+   * Lazy index for events with large date ranges
+   * @private
+   */
+  _indexEventLazy(event) {
+    // Create lazy index markers
+    const markers = this.optimizer.createLazyIndexMarkers(event);
+
+    // Index only the boundaries initially
+    const startDate = DateUtils.startOfDay(event.start);
+    const endDate = DateUtils.endOfDay(event.end);
+
+    // Index first week
+    const firstWeekEnd = new Date(startDate);
+    firstWeekEnd.setDate(firstWeekEnd.getDate() + 7);
+    const firstWeekDates = DateUtils.getDateRange(startDate,
+      firstWeekEnd < endDate ? firstWeekEnd : endDate);
+
+    firstWeekDates.forEach(date => {
+      const dateStr = date.toDateString();
+      if (!this.indices.byDate.has(dateStr)) {
+        this.indices.byDate.set(dateStr, new Set());
+      }
+      this.indices.byDate.get(dateStr).add(event.id);
+    });
+
+    // Index last week if different from first
+    if (endDate > firstWeekEnd) {
+      const lastWeekStart = new Date(endDate);
+      lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+      const lastWeekDates = DateUtils.getDateRange(
+        lastWeekStart > startDate ? lastWeekStart : startDate,
+        endDate
+      );
+
+      lastWeekDates.forEach(date => {
+        const dateStr = date.toDateString();
+        if (!this.indices.byDate.has(dateStr)) {
+          this.indices.byDate.set(dateStr, new Set());
+        }
+        this.indices.byDate.get(dateStr).add(event.id);
+      });
+    }
+
+    // Index months as normal
+    const currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+    while (currentMonth <= endDate) {
+      const monthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+      if (!this.indices.byMonth.has(monthKey)) {
+        this.indices.byMonth.set(monthKey, new Set());
+      }
+      this.indices.byMonth.get(monthKey).add(event.id);
+      currentMonth.setMonth(currentMonth.getMonth() + 1);
+    }
+
+    // Index other properties normally
+    if (event.categories && event.categories.length > 0) {
+      event.categories.forEach(category => {
+        if (!this.indices.byCategory.has(category)) {
+          this.indices.byCategory.set(category, new Set());
+        }
+        this.indices.byCategory.get(category).add(event.id);
+      });
+    }
+
+    if (event.status) {
+      if (!this.indices.byStatus.has(event.status)) {
+        this.indices.byStatus.set(event.status, new Set());
+      }
+      this.indices.byStatus.get(event.status).add(event.id);
+    }
+
     if (event.recurring) {
       this.indices.recurring.add(event.id);
     }
@@ -591,7 +732,197 @@ export class EventStore {
       recurringEvents: this.indices.recurring.size,
       indexedDates: this.indices.byDate.size,
       indexedMonths: this.indices.byMonth.size,
-      version: this.version
+      indexedCategories: this.indices.byCategory.size,
+      indexedStatuses: this.indices.byStatus.size,
+      version: this.version,
+      performanceMetrics: this.optimizer.getMetrics()
     };
+  }
+
+  // ============ Batch Operations ============
+
+  /**
+   * Start batch mode for bulk operations
+   * Delays notifications until batch is committed
+   */
+  startBatch() {
+    this.isBatchMode = true;
+    this.batchNotifications = [];
+  }
+
+  /**
+   * Commit batch operations
+   * Sends all notifications at once
+   */
+  commitBatch() {
+    if (!this.isBatchMode) return;
+
+    this.isBatchMode = false;
+
+    // Send a single bulk notification
+    if (this.batchNotifications.length > 0) {
+      this._notifyChange({
+        type: 'batch',
+        changes: this.batchNotifications,
+        count: this.batchNotifications.length,
+        version: ++this.version
+      });
+    }
+
+    this.batchNotifications = [];
+  }
+
+  /**
+   * Rollback batch operations
+   * Cancels batch without sending notifications
+   */
+  rollbackBatch() {
+    this.isBatchMode = false;
+    this.batchNotifications = [];
+  }
+
+  /**
+   * Add multiple events in batch
+   * @param {Array<Event|import('../../types.js').EventData>} events - Events to add
+   * @returns {Event[]} Added events
+   */
+  addEvents(events) {
+    return this.optimizer.measure('addEvents', () => {
+      this.startBatch();
+      const results = [];
+      const errors = [];
+
+      for (const eventData of events) {
+        try {
+          results.push(this.addEvent(eventData));
+        } catch (error) {
+          errors.push({ event: eventData, error: error.message });
+        }
+      }
+
+      this.commitBatch();
+
+      if (errors.length > 0) {
+        console.warn(`Failed to add ${errors.length} events:`, errors);
+      }
+
+      return results;
+    });
+  }
+
+  /**
+   * Update multiple events in batch
+   * @param {Array<{id: string, updates: Object}>} updates - Update operations
+   * @returns {Event[]} Updated events
+   */
+  updateEvents(updates) {
+    return this.optimizer.measure('updateEvents', () => {
+      this.startBatch();
+      const results = [];
+      const errors = [];
+
+      for (const { id, updates: eventUpdates } of updates) {
+        try {
+          results.push(this.updateEvent(id, eventUpdates));
+        } catch (error) {
+          errors.push({ id, error: error.message });
+        }
+      }
+
+      this.commitBatch();
+
+      if (errors.length > 0) {
+        console.warn(`Failed to update ${errors.length} events:`, errors);
+      }
+
+      return results;
+    });
+  }
+
+  /**
+   * Remove multiple events in batch
+   * @param {string[]} eventIds - Event IDs to remove
+   * @returns {number} Number of events removed
+   */
+  removeEvents(eventIds) {
+    return this.optimizer.measure('removeEvents', () => {
+      this.startBatch();
+      let removed = 0;
+
+      for (const id of eventIds) {
+        if (this.removeEvent(id)) {
+          removed++;
+        }
+      }
+
+      this.commitBatch();
+      return removed;
+    });
+  }
+
+  // ============ Performance Methods ============
+
+  /**
+   * Get performance metrics
+   * @returns {Object} Performance metrics
+   */
+  getPerformanceMetrics() {
+    return this.optimizer.getMetrics();
+  }
+
+  /**
+   * Clear all caches
+   */
+  clearCaches() {
+    this.optimizer.eventCache.clear();
+    this.optimizer.queryCache.clear();
+    this.optimizer.dateRangeCache.clear();
+  }
+
+  /**
+   * Optimize indices by removing old or irrelevant entries
+   * @param {Date} [cutoffDate] - Remove indices older than this date
+   */
+  optimizeIndices(cutoffDate) {
+    if (!cutoffDate) {
+      cutoffDate = new Date();
+      cutoffDate.setMonth(cutoffDate.getMonth() - 6); // Default: 6 months ago
+    }
+
+    const cutoffStr = cutoffDate.toDateString();
+    let removed = 0;
+
+    // Clean up date indices
+    for (const [dateStr, eventIds] of this.indices.byDate) {
+      const date = new Date(dateStr);
+      if (date < cutoffDate) {
+        // Check if any events still need this index
+        let stillNeeded = false;
+        for (const eventId of eventIds) {
+          const event = this.events.get(eventId);
+          if (event && event.end >= cutoffDate) {
+            stillNeeded = true;
+            break;
+          }
+        }
+
+        if (!stillNeeded) {
+          this.indices.byDate.delete(dateStr);
+          removed++;
+        }
+      }
+    }
+
+    console.log(`Optimized indices: removed ${removed} old date entries`);
+    return removed;
+  }
+
+  /**
+   * Destroy the store and clean up resources
+   */
+  destroy() {
+    this.clear();
+    this.optimizer.destroy();
+    this.listeners.clear();
   }
 }
