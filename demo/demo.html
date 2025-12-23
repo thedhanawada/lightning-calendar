@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightning Calendar Core - Interactive Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .demo-header {
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .demo-controls-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        select {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .timezone-display {
+            background: #0070f3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 200px);
+        }
+
+        .calendar-main {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .sidebar-card h3 {
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .event-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #0070f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0051cc;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .timezone-events {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .tz-event-item {
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #0070f3;
+            border-radius: 3px;
+        }
+
+        .tz-event-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .tz-event-times {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .conflict-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .conflict-item {
+            padding: 8px;
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .conflict-item.severe {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 3px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0070f3;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Calendar styles */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .calendar-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            height: calc(100% - 60px);
+        }
+
+        .calendar-day-header {
+            padding: 10px;
+            text-align: center;
+            background: #f5f5f5;
+            border: 1px solid #eee;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            border: 1px solid #eee;
+            padding: 8px;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .calendar-day.today {
+            background: #e8f4fd;
+        }
+
+        .calendar-day.other-month {
+            background: #fafafa;
+            color: #999;
+        }
+
+        .day-number {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .calendar-event {
+            padding: 2px 5px;
+            background: #0070f3;
+            color: white;
+            border-radius: 2px;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .calendar-event.conflict {
+            background: #dc3545;
+        }
+
+        .calendar-event:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1024px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                grid-row: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="site-header">
+            <div class="header-content">
+                <h1>Lightning Calendar Core - Interactive Demo</h1>
+                <nav>
+                    <a href="index.html">Home</a>
+                    <a href="#" class="active">Demo</a>
+                    <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a>
+                </nav>
+            </div>
+        </header>
+
+        <div class="demo-header">
+            <div class="demo-controls-bar">
+                <div class="control-group">
+                    <label>Timezone:</label>
+                    <select id="timezoneSelect">
+                        <option value="America/New_York">New York (EST/EDT)</option>
+                        <option value="America/Chicago">Chicago (CST/CDT)</option>
+                        <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                        <option value="Europe/London">London (GMT/BST)</option>
+                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                        <option value="UTC">UTC</option>
+                    </select>
+                    <span id="currentTime" class="timezone-display"></span>
+                </div>
+
+                <div class="control-group">
+                    <label>View:</label>
+                    <button class="btn btn-secondary active" data-view="month">Month</button>
+                    <button class="btn btn-secondary" data-view="week">Week</button>
+                    <button class="btn btn-secondary" data-view="day">Day</button>
+                </div>
+
+                <div class="control-group">
+                    <button class="btn btn-secondary" id="prevBtn">←</button>
+                    <button class="btn btn-secondary" id="todayBtn">Today</button>
+                    <button class="btn btn-secondary" id="nextBtn">→</button>
+                </div>
+
+                <div class="control-group">
+                    <button class="btn btn-primary" id="detectConflictsBtn">Detect Conflicts</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-container">
+            <div class="calendar-main">
+                <div class="calendar-header">
+                    <div class="calendar-title" id="calendarTitle">December 2024</div>
+                </div>
+                <div id="calendarContent">
+                    <!-- Calendar will be rendered here -->
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <!-- Quick Add Event -->
+                <div class="sidebar-card">
+                    <h3>Quick Add Event</h3>
+                    <form class="event-form" id="quickAddForm">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="eventTitle" placeholder="Event title" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Timezone</label>
+                                <select id="eventTimezone">
+                                    <option value="America/New_York">New York</option>
+                                    <option value="America/Los_Angeles">Los Angeles</option>
+                                    <option value="Europe/London">London</option>
+                                    <option value="Asia/Tokyo">Tokyo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Time</label>
+                                <input type="time" id="startTime" value="09:00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>End Time</label>
+                                <input type="time" id="endTime" value="10:00" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Event</button>
+                    </form>
+                </div>
+
+                <!-- Timezone Comparison -->
+                <div class="sidebar-card">
+                    <h3>Multi-Timezone View</h3>
+                    <div id="timezoneEvents" class="timezone-events">
+                        <!-- Events will be shown here with times in different timezones -->
+                    </div>
+                </div>
+
+                <!-- Conflicts -->
+                <div class="sidebar-card">
+                    <h3>Conflict Detection</h3>
+                    <div id="conflictList" class="conflict-list">
+                        <div style="text-align: center; color: #999; padding: 20px;">
+                            No conflicts detected
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="sidebar-card">
+                    <h3>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalEvents">0</div>
+                            <div class="stat-label">Total Events</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="todayEvents">0</div>
+                            <div class="stat-label">Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="conflictCount">0</div>
+                            <div class="stat-label">Conflicts</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="timezoneCount">1</div>
+                            <div class="stat-label">Timezones</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="demo-interactive.js"></script>
+</body>
+</html>

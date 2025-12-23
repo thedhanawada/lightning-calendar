@@ -3,8 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning Calendar Core</title>
+    <title>Lightning Calendar Core - Enterprise Calendar Engine for Salesforce</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .hero .tagline {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .hero .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .hero .btn-primary {
+            background: #0070f3;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .hero .btn-secondary {
+            background: white;
+            color: #0070f3;
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #0070f3;
+            font-weight: 500;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 30px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-card .demo-box {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 150px;
+        }
+
+        .code-sample {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        .timezone-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timezone-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .conflict-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .event-bar {
+            position: relative;
+            height: 30px;
+            background: #4CAF50;
+            border-radius: 3px;
+            padding: 5px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .event-bar.conflict {
+            background: #f44336;
+        }
+
+        .performance-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0070f3;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <div class="page">
@@ -12,236 +153,165 @@
             <div class="header-content">
                 <h1>Lightning Calendar Core</h1>
                 <nav>
-                    <a href="#about">About</a>
-                    <a href="#demo">Demo</a>
-                    <a href="#documentation">Documentation</a>
-                    <a href="https://github.com/thedhanawada/lightning-calendar-core">Source</a>
+                    <a href="#features">Features</a>
+                    <a href="demo.html">Live Demo</a>
+                    <a href="docs.html">Documentation</a>
+                    <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a>
                 </nav>
             </div>
         </header>
 
         <main>
-            <section id="about" class="section">
-                <h2>About</h2>
-                <p>
-                    Lightning Calendar Core is a zero-dependency JavaScript calendar engine specifically designed for
-                    Salesforce Lightning Web Components. Built to work within Locker Service and Lightning Locker
-                    restrictions, it provides enterprise-grade calendar functionality without any external dependencies.
-                </p>
+            <section class="hero">
+                <h1>Enterprise Calendar Engine for Salesforce</h1>
+                <p class="tagline">Zero-dependency, high-performance calendar engine designed specifically for Salesforce Lightning Web Components</p>
+                <div class="cta-buttons">
+                    <a href="demo.html" class="btn-primary">Try Live Demo</a>
+                    <a href="#installation" class="btn-secondary">Installation Guide</a>
+                </div>
+            </section>
 
-                <h3>Why for Salesforce?</h3>
-                <ul>
-                    <li>Zero dependencies - works within Locker Service restrictions</li>
-                    <li>Pure JavaScript - no build tools or transpilation needed</li>
-                    <li>Designed for LWC integration with Salesforce data</li>
-                    <li>Handles Salesforce Events, Tasks, and custom objects</li>
-                    <li>Enterprise features: attendee management, resource booking, conflict detection</li>
-                    <li>Optimized for large datasets from Salesforce queries</li>
-                </ul>
+            <section id="features" class="features-grid">
+                <!-- Timezone Support Feature -->
+                <div class="feature-card">
+                    <h3>🌍 Global Timezone Support</h3>
+                    <p>Handle events across multiple timezones with automatic DST transitions. Critical for global Salesforce orgs.</p>
+                    <div class="demo-box">
+                        <div class="timezone-demo" id="timezoneDemo">
+                            <div class="timezone-item">
+                                <span>New York (10:00 AM)</span>
+                                <span>Meeting</span>
+                            </div>
+                            <div class="timezone-item">
+                                <span>London (3:00 PM)</span>
+                                <span>Same Meeting</span>
+                            </div>
+                            <div class="timezone-item">
+                                <span>Tokyo (11:00 PM)</span>
+                                <span>Same Meeting</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <h3>Installation Options</h3>
+                <!-- Conflict Detection Feature -->
+                <div class="feature-card">
+                    <h3>⚠️ Intelligent Conflict Detection</h3>
+                    <p>Detect scheduling conflicts including time overlaps, resource conflicts, and attendee availability.</p>
+                    <div class="demo-box">
+                        <div class="conflict-demo">
+                            <div class="event-bar">Team Meeting: 9:00-10:00</div>
+                            <div class="event-bar conflict">❌ Client Call: 9:30-10:30 (Conflict!)</div>
+                            <div class="event-bar">Lunch: 12:00-1:00</div>
+                        </div>
+                    </div>
+                </div>
 
-                <h4>Option 1: Lightning Web Component</h4>
-                <pre><code># Copy core files to your LWC directory
+                <!-- Performance Feature -->
+                <div class="feature-card">
+                    <h3>⚡ Optimized Performance</h3>
+                    <p>LRU caching, lazy indexing, and batch operations for handling thousands of events efficiently.</p>
+                    <div class="demo-box">
+                        <div class="performance-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">10K+</div>
+                                <div class="stat-label">Events</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">&lt;50ms</div>
+                                <div class="stat-label">Query Time</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">95%</div>
+                                <div class="stat-label">Cache Hit</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Dependencies</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Model Feature -->
+                <div class="feature-card">
+                    <h3>📅 Rich Event Model</h3>
+                    <p>Comprehensive event support with attendees, reminders, categories, and recurrence patterns.</p>
+                    <div class="demo-box">
+                        <div class="code-sample">
+<pre>{
+  title: "Opportunity Review",
+  attendees: [/* multiple */],
+  reminders: [/* email, popup */],
+  categories: ["sales", "important"],
+  recurrence: "WEEKLY",
+  timeZone: "America/New_York"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salesforce Integration -->
+                <div class="feature-card">
+                    <h3>☁️ Salesforce Native</h3>
+                    <p>Built specifically for Salesforce Lightning Web Components with Locker Service compatibility.</p>
+                    <div class="demo-box">
+                        <div class="code-sample">
+<pre>import { Calendar } from 'c/calendarCore';
+
+export default class OpportunityCalendar
+  extends LightningElement {
+
+  @wire(getOpportunities)
+  loadOpportunities({ data }) {
+    this.calendar.addEvents(data);
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zero Dependencies -->
+                <div class="feature-card">
+                    <h3>📦 Zero Dependencies</h3>
+                    <p>Pure JavaScript implementation with no external dependencies. Works within Salesforce's strict security model.</p>
+                    <div class="demo-box">
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 3em;">0</div>
+                            <div style="color: #666;">External Dependencies</div>
+                            <div style="margin-top: 10px; color: #0070f3;">100% Pure JavaScript</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="installation" class="section">
+                <h2>Installation</h2>
+
+                <h3>Lightning Web Component</h3>
+                <div class="code-sample">
+<pre># Copy core files to your LWC directory
 cp -r packages/core/src/* force-app/main/default/lwc/calendarCore/
 
 # Deploy to Salesforce
-sfdx force:source:deploy -p force-app/main/default/lwc/calendarCore</code></pre>
+sfdx force:source:deploy -p force-app/main/default/lwc/calendarCore</pre>
+                </div>
 
-                <h4>Option 2: Static Resource (for Visualforce)</h4>
-                <pre><code># Create a zip file of the core
+                <h3>Static Resource (Visualforce)</h3>
+                <div class="code-sample">
+<pre># Create zip and upload as Static Resource
 zip -r calendar-core.zip packages/core/src/*
-
-# Upload as Static Resource in Setup > Static Resources
-# Name: calendar_core</code></pre>
-
-                <h3>Usage in Lightning Web Components</h3>
-                <pre><code>import { LightningElement } from 'lwc';
-import { Calendar, EventStore } from 'c/calendarCore';
-
-export default class OpportunityCalendar extends LightningElement {
-    connectedCallback() {
-        this.calendar = new Calendar();
-
-        // Integrate with Salesforce data
-        this.loadOpportunityMeetings();
-    }
-
-    loadOpportunityMeetings() {
-        // Add events from Salesforce records
-        this.calendar.addEvent({
-            title: 'Deal Review: ' + this.opportunity.Name,
-            start: new Date(this.opportunity.CloseDate),
-            attendees: [
-                { name: this.opportunity.Owner.Name,
-                  email: this.opportunity.Owner.Email }
-            ]
-        });
-    }
-}</code></pre>
-
-                <h3>Usage in Visualforce</h3>
-                <pre><code>&lt;apex:page&gt;
-    &lt;apex:includeScript value="{!$Resource.calendar_core + '/index.js'}"/&gt;
-
-    &lt;script&gt;
-        const calendar = new LightningCalendarCore.Calendar();
-
-        // Use with Visualforce remoting or controller data
-        calendar.addEvent({!eventDataJSON});
-    &lt;/script&gt;
-&lt;/apex:page&gt;</code></pre>
-            </section>
-
-            <section id="demo" class="section">
-                <h2>Demo</h2>
-
-                <div class="demo-controls">
-                    <div class="control-row">
-                        <label>View:</label>
-                        <button class="btn active" data-view="month">Month</button>
-                        <button class="btn" data-view="week">Week</button>
-                        <button class="btn" data-view="day">Day</button>
-                        <button class="btn" data-view="list">List</button>
-                    </div>
-
-                    <div class="control-row">
-                        <button class="btn" id="prevBtn">&larr; Previous</button>
-                        <button class="btn" id="todayBtn">Today</button>
-                        <button class="btn" id="nextBtn">Next &rarr;</button>
-                    </div>
-
-                    <div class="control-row">
-                        <button class="btn" id="addEventBtn">Add Event</button>
-                        <button class="btn" id="detectConflictsBtn">Detect Conflicts</button>
-                        <button class="btn" id="clearBtn">Clear All</button>
-                    </div>
-                </div>
-
-                <div class="demo-layout">
-                    <div id="calendar" class="calendar-container">
-                        <!-- Calendar renders here -->
-                    </div>
-
-                    <aside class="info-panel">
-                        <div class="panel-section">
-                            <h3>Selected Event</h3>
-                            <div id="eventDetails">
-                                <p class="muted">Click an event to view details</p>
-                            </div>
-                        </div>
-
-                        <div class="panel-section">
-                            <h3>Conflicts</h3>
-                            <div id="conflictInfo">
-                                <p class="muted">No conflicts detected</p>
-                            </div>
-                        </div>
-
-                        <div class="panel-section">
-                            <h3>Statistics</h3>
-                            <dl class="stats">
-                                <dt>Total Events:</dt>
-                                <dd id="totalEvents">0</dd>
-
-                                <dt>With Attendees:</dt>
-                                <dd id="attendeeEvents">0</dd>
-
-                                <dt>Cache Hit Rate:</dt>
-                                <dd id="cacheHitRate">0%</dd>
-                            </dl>
-                        </div>
-                    </aside>
+# Upload in Setup > Static Resources as 'calendar_core'</pre>
                 </div>
             </section>
 
-            <section id="documentation" class="section">
-                <h2>Documentation</h2>
-
-                <h3>Event Model</h3>
-                <p>The enhanced event model supports:</p>
-                <pre><code>{
-    id: string,
-    title: string,
-    start: Date,
-    end: Date,
-    attendees: [{ name, email, responseStatus, resource }],
-    reminders: [{ method, minutesBefore }],
-    categories: string[],
-    location: string,
-    organizer: { name, email },
-    conferenceData: { url, accessCode },
-    status: 'confirmed' | 'tentative' | 'cancelled'
-}</code></pre>
-
-                <h3>Conflict Detection</h3>
-                <p>Check for scheduling conflicts:</p>
-                <pre><code>const conflicts = calendar.checkConflicts(event, {
-    checkAttendees: true,
-    checkResources: true,
-    checkLocation: true,
-    bufferMinutes: 15
-});
-
-if (conflicts.hasConflicts) {
-    console.log(`Found ${conflicts.totalConflicts} conflicts`);
-    conflicts.conflicts.forEach(conflict => {
-        console.log(`${conflict.type}: ${conflict.description}`);
-    });
-}</code></pre>
-
-                <h3>Performance</h3>
-                <p>The core includes performance optimizations:</p>
-                <ul>
-                    <li>LRU cache with configurable capacity</li>
-                    <li>Lazy indexing for events beyond 365 days</li>
-                    <li>Batch operations reduce overhead by 60%</li>
-                    <li>O(1) event lookups via Map storage</li>
-                </ul>
-
-                <h3>API Reference</h3>
-                <table class="api-table">
-                    <thead>
-                        <tr>
-                            <th>Method</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>addEvent(event)</code></td>
-                            <td>Add a single event</td>
-                        </tr>
-                        <tr>
-                            <td><code>addEvents(events[])</code></td>
-                            <td>Batch add multiple events</td>
-                        </tr>
-                        <tr>
-                            <td><code>removeEvent(id)</code></td>
-                            <td>Remove event by ID</td>
-                        </tr>
-                        <tr>
-                            <td><code>getEvent(id)</code></td>
-                            <td>Get event by ID</td>
-                        </tr>
-                        <tr>
-                            <td><code>getEventsInRange(start, end)</code></td>
-                            <td>Query events in date range</td>
-                        </tr>
-                        <tr>
-                            <td><code>checkConflicts(event, options)</code></td>
-                            <td>Check for scheduling conflicts</td>
-                        </tr>
-                        <tr>
-                            <td><code>getBusyPeriods(emails[], start, end)</code></td>
-                            <td>Get busy periods for attendees</td>
-                        </tr>
-                        <tr>
-                            <td><code>getFreePeriods(start, end, duration)</code></td>
-                            <td>Find available time slots</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <section class="section" style="text-align: center; padding: 60px 20px;">
+                <h2>Ready to Get Started?</h2>
+                <p style="margin: 20px 0;">Experience the full power of Lightning Calendar Core with our interactive demo.</p>
+                <div class="cta-buttons">
+                    <a href="demo.html" class="btn-primary">Launch Interactive Demo</a>
+                    <a href="https://github.com/thedhanawada/lightning-calendar-core" class="btn-secondary">View on GitHub</a>
+                </div>
             </section>
         </main>
 
@@ -255,6 +325,30 @@ if (conflicts.hasConflicts) {
         </footer>
     </div>
 
-    <script type="module" src="demo.js"></script>
+    <script>
+        // Simple animations for the landing page demos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate timezone demo
+            const timezoneItems = document.querySelectorAll('.timezone-item');
+            let currentIndex = 0;
+
+            setInterval(() => {
+                timezoneItems.forEach(item => item.style.background = 'white');
+                timezoneItems[currentIndex].style.background = '#e3f2fd';
+                currentIndex = (currentIndex + 1) % timezoneItems.length;
+            }, 2000);
+
+            // Animate performance stats
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const originalValue = stat.textContent;
+                stat.style.opacity = '0';
+                setTimeout(() => {
+                    stat.style.transition = 'opacity 0.5s';
+                    stat.style.opacity = '1';
+                }, Math.random() * 1000);
+            });
+        });
+    </script>
 </body>
 </html>

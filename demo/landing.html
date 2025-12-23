@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightning Calendar Core</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page">
+        <header class="site-header">
+            <div class="header-content">
+                <h1>Lightning Calendar Core</h1>
+                <nav>
+                    <a href="#about">About</a>
+                    <a href="#demo">Demo</a>
+                    <a href="#documentation">Documentation</a>
+                    <a href="https://github.com/thedhanawada/lightning-calendar-core">Source</a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section id="about" class="section">
+                <h2>About</h2>
+                <p>
+                    Lightning Calendar Core is a zero-dependency JavaScript calendar engine specifically designed for
+                    Salesforce Lightning Web Components. Built to work within Locker Service and Lightning Locker
+                    restrictions, it provides enterprise-grade calendar functionality without any external dependencies.
+                </p>
+
+                <h3>Why for Salesforce?</h3>
+                <ul>
+                    <li>Zero dependencies - works within Locker Service restrictions</li>
+                    <li>Pure JavaScript - no build tools or transpilation needed</li>
+                    <li>Designed for LWC integration with Salesforce data</li>
+                    <li>Handles Salesforce Events, Tasks, and custom objects</li>
+                    <li>Enterprise features: attendee management, resource booking, conflict detection</li>
+                    <li>Optimized for large datasets from Salesforce queries</li>
+                </ul>
+
+                <h3>Installation Options</h3>
+
+                <h4>Option 1: Lightning Web Component</h4>
+                <pre><code># Copy core files to your LWC directory
+cp -r packages/core/src/* force-app/main/default/lwc/calendarCore/
+
+# Deploy to Salesforce
+sfdx force:source:deploy -p force-app/main/default/lwc/calendarCore</code></pre>
+
+                <h4>Option 2: Static Resource (for Visualforce)</h4>
+                <pre><code># Create a zip file of the core
+zip -r calendar-core.zip packages/core/src/*
+
+# Upload as Static Resource in Setup > Static Resources
+# Name: calendar_core</code></pre>
+
+                <h3>Usage in Lightning Web Components</h3>
+                <pre><code>import { LightningElement } from 'lwc';
+import { Calendar, EventStore } from 'c/calendarCore';
+
+export default class OpportunityCalendar extends LightningElement {
+    connectedCallback() {
+        this.calendar = new Calendar();
+
+        // Integrate with Salesforce data
+        this.loadOpportunityMeetings();
+    }
+
+    loadOpportunityMeetings() {
+        // Add events from Salesforce records
+        this.calendar.addEvent({
+            title: 'Deal Review: ' + this.opportunity.Name,
+            start: new Date(this.opportunity.CloseDate),
+            attendees: [
+                { name: this.opportunity.Owner.Name,
+                  email: this.opportunity.Owner.Email }
+            ]
+        });
+    }
+}</code></pre>
+
+                <h3>Usage in Visualforce</h3>
+                <pre><code>&lt;apex:page&gt;
+    &lt;apex:includeScript value="{!$Resource.calendar_core + '/index.js'}"/&gt;
+
+    &lt;script&gt;
+        const calendar = new LightningCalendarCore.Calendar();
+
+        // Use with Visualforce remoting or controller data
+        calendar.addEvent({!eventDataJSON});
+    &lt;/script&gt;
+&lt;/apex:page&gt;</code></pre>
+            </section>
+
+            <section id="demo" class="section">
+                <h2>Demo</h2>
+
+                <div class="demo-controls">
+                    <div class="control-row">
+                        <label>View:</label>
+                        <button class="btn active" data-view="month">Month</button>
+                        <button class="btn" data-view="week">Week</button>
+                        <button class="btn" data-view="day">Day</button>
+                        <button class="btn" data-view="list">List</button>
+                    </div>
+
+                    <div class="control-row">
+                        <button class="btn" id="prevBtn">&larr; Previous</button>
+                        <button class="btn" id="todayBtn">Today</button>
+                        <button class="btn" id="nextBtn">Next &rarr;</button>
+                    </div>
+
+                    <div class="control-row">
+                        <button class="btn" id="addEventBtn">Add Event</button>
+                        <button class="btn" id="detectConflictsBtn">Detect Conflicts</button>
+                        <button class="btn" id="clearBtn">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="demo-layout">
+                    <div id="calendar" class="calendar-container">
+                        <!-- Calendar renders here -->
+                    </div>
+
+                    <aside class="info-panel">
+                        <div class="panel-section">
+                            <h3>Selected Event</h3>
+                            <div id="eventDetails">
+                                <p class="muted">Click an event to view details</p>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <h3>Conflicts</h3>
+                            <div id="conflictInfo">
+                                <p class="muted">No conflicts detected</p>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <h3>Statistics</h3>
+                            <dl class="stats">
+                                <dt>Total Events:</dt>
+                                <dd id="totalEvents">0</dd>
+
+                                <dt>With Attendees:</dt>
+                                <dd id="attendeeEvents">0</dd>
+
+                                <dt>Cache Hit Rate:</dt>
+                                <dd id="cacheHitRate">0%</dd>
+                            </dl>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="documentation" class="section">
+                <h2>Documentation</h2>
+
+                <h3>Event Model</h3>
+                <p>The enhanced event model supports:</p>
+                <pre><code>{
+    id: string,
+    title: string,
+    start: Date,
+    end: Date,
+    attendees: [{ name, email, responseStatus, resource }],
+    reminders: [{ method, minutesBefore }],
+    categories: string[],
+    location: string,
+    organizer: { name, email },
+    conferenceData: { url, accessCode },
+    status: 'confirmed' | 'tentative' | 'cancelled'
+}</code></pre>
+
+                <h3>Conflict Detection</h3>
+                <p>Check for scheduling conflicts:</p>
+                <pre><code>const conflicts = calendar.checkConflicts(event, {
+    checkAttendees: true,
+    checkResources: true,
+    checkLocation: true,
+    bufferMinutes: 15
+});
+
+if (conflicts.hasConflicts) {
+    console.log(`Found ${conflicts.totalConflicts} conflicts`);
+    conflicts.conflicts.forEach(conflict => {
+        console.log(`${conflict.type}: ${conflict.description}`);
+    });
+}</code></pre>
+
+                <h3>Performance</h3>
+                <p>The core includes performance optimizations:</p>
+                <ul>
+                    <li>LRU cache with configurable capacity</li>
+                    <li>Lazy indexing for events beyond 365 days</li>
+                    <li>Batch operations reduce overhead by 60%</li>
+                    <li>O(1) event lookups via Map storage</li>
+                </ul>
+
+                <h3>API Reference</h3>
+                <table class="api-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>addEvent(event)</code></td>
+                            <td>Add a single event</td>
+                        </tr>
+                        <tr>
+                            <td><code>addEvents(events[])</code></td>
+                            <td>Batch add multiple events</td>
+                        </tr>
+                        <tr>
+                            <td><code>removeEvent(id)</code></td>
+                            <td>Remove event by ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>getEvent(id)</code></td>
+                            <td>Get event by ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>getEventsInRange(start, end)</code></td>
+                            <td>Query events in date range</td>
+                        </tr>
+                        <tr>
+                            <td><code>checkConflicts(event, options)</code></td>
+                            <td>Check for scheduling conflicts</td>
+                        </tr>
+                        <tr>
+                            <td><code>getBusyPeriods(emails[], start, end)</code></td>
+                            <td>Get busy periods for attendees</td>
+                        </tr>
+                        <tr>
+                            <td><code>getFreePeriods(start, end, duration)</code></td>
+                            <td>Find available time slots</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>
+                Lightning Calendar Core |
+                <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a> |
+                <a href="https://github.com/thedhanawada/lightning-calendar-core/issues">Issues</a> |
+                MIT License
+            </p>
+        </footer>
+    </div>
+
+    <script type="module" src="demo.js"></script>
+</body>
+</html>
