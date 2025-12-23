@@ -3,352 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning Calendar Core - Enterprise Calendar Engine for Salesforce</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Lightning Calendar Core</title>
     <style>
-        .hero {
-            padding: 60px 20px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .hero h1 {
-            font-size: 2.5em;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+        }
+
+        header {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px;
+            background: #f8f8f8;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        nav a {
+            margin-left: 30px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            margin-bottom: 40px;
+        }
+
+        .intro h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .intro p {
+            color: #666;
             margin-bottom: 20px;
         }
 
-        .hero .tagline {
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .hero .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .hero .btn-primary {
-            background: #0070f3;
+        .demo-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0066cc;
             color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
             text-decoration: none;
-            font-weight: 500;
+            margin-right: 10px;
         }
 
-        .hero .btn-secondary {
-            background: white;
-            color: #0070f3;
-            padding: 12px 24px;
-            border-radius: 4px;
-            text-decoration: none;
-            border: 1px solid #0070f3;
-            font-weight: 500;
+        .demo-link:hover {
+            background: #0052a3;
         }
 
-        .features-grid {
+        .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
-            padding: 60px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            margin: 40px 0;
         }
 
-        .feature-card {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 30px;
-        }
-
-        .feature-card h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .feature-card .demo-box {
-            background: #f5f5f5;
+        .feature {
             border: 1px solid #e0e0e0;
-            border-radius: 4px;
             padding: 20px;
-            margin-top: 20px;
-            min-height: 150px;
         }
 
-        .code-sample {
-            background: #1e1e1e;
-            color: #d4d4d4;
+        .feature h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .feature pre {
+            background: #f5f5f5;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .installation {
+            margin: 40px 0;
             padding: 20px;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.9em;
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+        }
+
+        .installation h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: normal;
+        }
+
+        .installation pre {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
             overflow-x: auto;
         }
 
-        .timezone-demo {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .timezone-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-
-        .conflict-demo {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .event-bar {
-            position: relative;
-            height: 30px;
-            background: #4CAF50;
-            border-radius: 3px;
-            padding: 5px;
-            color: white;
-            font-size: 0.9em;
-        }
-
-        .event-bar.conflict {
-            background: #f44336;
-        }
-
-        .performance-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .stat-box {
-            background: white;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #0070f3;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
+        footer {
+            margin-top: 60px;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
             color: #666;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #0066cc;
+            text-decoration: none;
+            margin: 0 10px;
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <header class="site-header">
-            <div class="header-content">
-                <h1>Lightning Calendar Core</h1>
-                <nav>
-                    <a href="#features">Features</a>
-                    <a href="demo.html">Live Demo</a>
-                    <a href="docs.html">Documentation</a>
-                    <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a>
-                </nav>
+    <header>
+        <div class="header-content">
+            <h1>Lightning Calendar Core</h1>
+            <nav>
+                <a href="demo.html">Demo</a>
+                <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <h2>Enterprise Calendar Engine for Salesforce Lightning Web Components</h2>
+            <p>Zero-dependency JavaScript calendar engine. Designed for Salesforce Locker Service compliance.</p>
+            <a href="demo.html" class="demo-link">View Interactive Demo</a>
+            <a href="#installation" class="demo-link" style="background: #666;">Installation Guide</a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>Global Timezone Support</h3>
+                <p>Handle events across multiple timezones with automatic DST transitions. Store events in UTC while displaying in local time. Critical for global Salesforce organizations.</p>
+                <pre>calendar.setTimezone('Asia/Tokyo');
+event.getStartInTimezone('America/New_York');</pre>
             </div>
-        </header>
 
-        <main>
-            <section class="hero">
-                <h1>Enterprise Calendar Engine for Salesforce</h1>
-                <p class="tagline">Zero-dependency, high-performance calendar engine designed specifically for Salesforce Lightning Web Components</p>
-                <div class="cta-buttons">
-                    <a href="demo.html" class="btn-primary">Try Live Demo</a>
-                    <a href="#installation" class="btn-secondary">Installation Guide</a>
-                </div>
-            </section>
+            <div class="feature">
+                <h3>Conflict Detection</h3>
+                <p>Detect scheduling conflicts including time overlaps, resource conflicts, and attendee availability. Essential for resource management and scheduling.</p>
+                <pre>const conflicts = calendar.checkConflicts(event);
+if (conflicts.hasConflicts) {
+  // Handle conflicts
+}</pre>
+            </div>
 
-            <section id="features" class="features-grid">
-                <!-- Timezone Support Feature -->
-                <div class="feature-card">
-                    <h3>🌍 Global Timezone Support</h3>
-                    <p>Handle events across multiple timezones with automatic DST transitions. Critical for global Salesforce orgs.</p>
-                    <div class="demo-box">
-                        <div class="timezone-demo" id="timezoneDemo">
-                            <div class="timezone-item">
-                                <span>New York (10:00 AM)</span>
-                                <span>Meeting</span>
-                            </div>
-                            <div class="timezone-item">
-                                <span>London (3:00 PM)</span>
-                                <span>Same Meeting</span>
-                            </div>
-                            <div class="timezone-item">
-                                <span>Tokyo (11:00 PM)</span>
-                                <span>Same Meeting</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="feature">
+                <h3>Performance Optimized</h3>
+                <p>LRU caching, lazy indexing, and batch operations. Handle thousands of events with sub-50ms query times. Optimized for large Salesforce datasets.</p>
+                <pre>// Batch operations
+calendar.addEvents(events);
+// Query with caching
+calendar.getEventsInRange(start, end);</pre>
+            </div>
 
-                <!-- Conflict Detection Feature -->
-                <div class="feature-card">
-                    <h3>⚠️ Intelligent Conflict Detection</h3>
-                    <p>Detect scheduling conflicts including time overlaps, resource conflicts, and attendee availability.</p>
-                    <div class="demo-box">
-                        <div class="conflict-demo">
-                            <div class="event-bar">Team Meeting: 9:00-10:00</div>
-                            <div class="event-bar conflict">❌ Client Call: 9:30-10:30 (Conflict!)</div>
-                            <div class="event-bar">Lunch: 12:00-1:00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Performance Feature -->
-                <div class="feature-card">
-                    <h3>⚡ Optimized Performance</h3>
-                    <p>LRU caching, lazy indexing, and batch operations for handling thousands of events efficiently.</p>
-                    <div class="demo-box">
-                        <div class="performance-stats">
-                            <div class="stat-box">
-                                <div class="stat-value">10K+</div>
-                                <div class="stat-label">Events</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-value">&lt;50ms</div>
-                                <div class="stat-label">Query Time</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-value">95%</div>
-                                <div class="stat-label">Cache Hit</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-value">0</div>
-                                <div class="stat-label">Dependencies</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Event Model Feature -->
-                <div class="feature-card">
-                    <h3>📅 Rich Event Model</h3>
-                    <p>Comprehensive event support with attendees, reminders, categories, and recurrence patterns.</p>
-                    <div class="demo-box">
-                        <div class="code-sample">
-<pre>{
+            <div class="feature">
+                <h3>Rich Event Model</h3>
+                <p>Comprehensive event support with attendees, reminders, categories, and recurrence patterns. Map directly to Salesforce Event and Task objects.</p>
+                <pre>{
   title: "Opportunity Review",
-  attendees: [/* multiple */],
-  reminders: [/* email, popup */],
-  categories: ["sales", "important"],
-  recurrence: "WEEKLY",
-  timeZone: "America/New_York"
+  attendees: [{email, responseStatus}],
+  reminders: [{method, minutesBefore}],
+  recurrence: "FREQ=WEEKLY"
 }</pre>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
-                <!-- Salesforce Integration -->
-                <div class="feature-card">
-                    <h3>☁️ Salesforce Native</h3>
-                    <p>Built specifically for Salesforce Lightning Web Components with Locker Service compatibility.</p>
-                    <div class="demo-box">
-                        <div class="code-sample">
-<pre>import { Calendar } from 'c/calendarCore';
+            <div class="feature">
+                <h3>Salesforce Native</h3>
+                <p>Built specifically for Lightning Web Components. No external dependencies. Works within Locker Service restrictions.</p>
+                <pre>import { Calendar } from 'c/calendarCore';
 
-export default class OpportunityCalendar
-  extends LightningElement {
-
-  @wire(getOpportunities)
-  loadOpportunities({ data }) {
-    this.calendar.addEvents(data);
-  }
+@wire(getEvents)
+loadEvents({data}) {
+  this.calendar.addEvents(data);
 }</pre>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
-                <!-- Zero Dependencies -->
-                <div class="feature-card">
-                    <h3>📦 Zero Dependencies</h3>
-                    <p>Pure JavaScript implementation with no external dependencies. Works within Salesforce's strict security model.</p>
-                    <div class="demo-box">
-                        <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 3em;">0</div>
-                            <div style="color: #666;">External Dependencies</div>
-                            <div style="margin-top: 10px; color: #0070f3;">100% Pure JavaScript</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div class="feature">
+                <h3>Zero Dependencies</h3>
+                <p>Pure JavaScript implementation. No jQuery, no Moment.js, no external libraries. Reduces security audit complexity and deployment size.</p>
+                <pre>// Pure JavaScript
+const calendar = new Calendar();
+// No external deps required</pre>
+            </div>
+        </div>
 
-            <section id="installation" class="section">
-                <h2>Installation</h2>
+        <div class="installation" id="installation">
+            <h2>Installation</h2>
 
-                <h3>Lightning Web Component</h3>
-                <div class="code-sample">
-<pre># Copy core files to your LWC directory
+            <h3>Lightning Web Component</h3>
+            <pre># Copy core files to LWC directory
 cp -r packages/core/src/* force-app/main/default/lwc/calendarCore/
 
 # Deploy to Salesforce
 sfdx force:source:deploy -p force-app/main/default/lwc/calendarCore</pre>
-                </div>
 
-                <h3>Static Resource (Visualforce)</h3>
-                <div class="code-sample">
-<pre># Create zip and upload as Static Resource
+            <h3>Static Resource (Visualforce)</h3>
+            <pre># Create zip file
 zip -r calendar-core.zip packages/core/src/*
-# Upload in Setup > Static Resources as 'calendar_core'</pre>
-                </div>
-            </section>
 
-            <section class="section" style="text-align: center; padding: 60px 20px;">
-                <h2>Ready to Get Started?</h2>
-                <p style="margin: 20px 0;">Experience the full power of Lightning Calendar Core with our interactive demo.</p>
-                <div class="cta-buttons">
-                    <a href="demo.html" class="btn-primary">Launch Interactive Demo</a>
-                    <a href="https://github.com/thedhanawada/lightning-calendar-core" class="btn-secondary">View on GitHub</a>
-                </div>
-            </section>
-        </main>
+# Upload as Static Resource in Setup > Static Resources
+# Name: calendar_core</pre>
 
-        <footer class="site-footer">
-            <p>
-                Lightning Calendar Core |
-                <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a> |
-                <a href="https://github.com/thedhanawada/lightning-calendar-core/issues">Issues</a> |
-                MIT License
-            </p>
-        </footer>
+            <h3>Usage</h3>
+            <pre>// In your LWC
+import { Calendar } from 'c/calendarCore';
+
+export default class MyCalendar extends LightningElement {
+    connectedCallback() {
+        this.calendar = new Calendar({
+            timeZone: 'America/New_York'
+        });
+
+        // Add events
+        this.calendar.addEvent({
+            id: 'evt-1',
+            title: 'Sales Meeting',
+            start: new Date('2024-12-24T10:00:00'),
+            end: new Date('2024-12-24T11:00:00'),
+            timeZone: 'America/New_York'
+        });
+    }
+}</pre>
+        </div>
     </div>
 
-    <script>
-        // Simple animations for the landing page demos
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate timezone demo
-            const timezoneItems = document.querySelectorAll('.timezone-item');
-            let currentIndex = 0;
-
-            setInterval(() => {
-                timezoneItems.forEach(item => item.style.background = 'white');
-                timezoneItems[currentIndex].style.background = '#e3f2fd';
-                currentIndex = (currentIndex + 1) % timezoneItems.length;
-            }, 2000);
-
-            // Animate performance stats
-            const statValues = document.querySelectorAll('.stat-value');
-            statValues.forEach(stat => {
-                const originalValue = stat.textContent;
-                stat.style.opacity = '0';
-                setTimeout(() => {
-                    stat.style.transition = 'opacity 0.5s';
-                    stat.style.opacity = '1';
-                }, Math.random() * 1000);
-            });
-        });
-    </script>
+    <footer>
+        <p>
+            Lightning Calendar Core |
+            <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a> |
+            <a href="https://github.com/thedhanawada/lightning-calendar-core/issues">Issues</a> |
+            MIT License
+        </p>
+    </footer>
 </body>
 </html>

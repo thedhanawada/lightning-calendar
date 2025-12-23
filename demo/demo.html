@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning Calendar Core - Interactive Demo</title>
+    <title>Lightning Calendar Core - Demo</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .demo-header {
-            background: #f5f5f5;
-            border-bottom: 1px solid #ddd;
+        .demo-controls {
+            background: #f8f8f8;
+            border-bottom: 1px solid #e0e0e0;
             padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .demo-controls-bar {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .control-group {
@@ -33,54 +26,78 @@
             color: #333;
         }
 
-        select {
+        select, button {
             padding: 5px 10px;
             border: 1px solid #ddd;
-            border-radius: 3px;
             background: white;
             font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #f5f5f5;
+        }
+
+        button.active {
+            background: #0066cc;
+            color: white;
         }
 
         .timezone-display {
-            background: #0070f3;
+            background: #333;
             color: white;
             padding: 5px 10px;
-            border-radius: 3px;
-            font-weight: 500;
+            font-family: monospace;
+            font-size: 13px;
         }
 
         .demo-container {
+            max-width: 1400px;
+            margin: 20px auto;
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 300px;
             gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 200px);
+            padding: 0 20px;
         }
 
-        .calendar-main {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .sidebar {
+        .info-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .sidebar-card {
+        .panel-section {
+            border: 1px solid #e0e0e0;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 20px;
+            padding: 15px;
         }
 
-        .sidebar-card h3 {
-            margin: 0 0 15px 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+        .panel-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stats dt {
+            font-weight: 500;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .stats dd {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: #333;
         }
 
         .event-form {
@@ -92,216 +109,38 @@
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 3px;
         }
 
         .form-group label {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
             font-weight: 500;
+            text-transform: uppercase;
         }
 
         .form-group input,
         .form-group select {
-            padding: 8px;
+            padding: 5px;
             border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 3px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary {
-            background: #0070f3;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #0051cc;
-        }
-
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .timezone-events {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .tz-event-item {
-            padding: 10px;
-            background: #f9f9f9;
-            border-left: 3px solid #0070f3;
-            border-radius: 3px;
-        }
-
-        .tz-event-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .tz-event-times {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            font-size: 12px;
-            color: #666;
+            font-size: 13px;
         }
 
         .conflict-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 150px;
-            overflow-y: auto;
+            font-size: 13px;
+            color: #666;
         }
 
         .conflict-item {
             padding: 8px;
+            margin-bottom: 5px;
             background: #fff3cd;
             border-left: 3px solid #ffc107;
-            border-radius: 3px;
-            font-size: 13px;
-        }
-
-        .conflict-item.severe {
-            background: #f8d7da;
-            border-color: #dc3545;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 3px;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0070f3;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        /* Calendar styles */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #fafafa;
-            border-bottom: 1px solid #eee;
-        }
-
-        .calendar-title {
-            font-size: 20px;
-            font-weight: 500;
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            height: calc(100% - 60px);
-        }
-
-        .calendar-day-header {
-            padding: 10px;
-            text-align: center;
-            background: #f5f5f5;
-            border: 1px solid #eee;
-            font-weight: 500;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .calendar-day {
-            border: 1px solid #eee;
-            padding: 8px;
-            min-height: 100px;
-            position: relative;
-        }
-
-        .calendar-day.today {
-            background: #e8f4fd;
-        }
-
-        .calendar-day.other-month {
-            background: #fafafa;
-            color: #999;
-        }
-
-        .day-number {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .day-events {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .calendar-event {
-            padding: 2px 5px;
-            background: #0070f3;
-            color: white;
-            border-radius: 2px;
-            font-size: 11px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-        }
-
-        .calendar-event.conflict {
-            background: #dc3545;
-        }
-
-        .calendar-event:hover {
-            opacity: 0.9;
         }
 
         @media (max-width: 1024px) {
             .demo-container {
                 grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                grid-row: 1;
             }
         }
     </style>
@@ -313,144 +152,487 @@
                 <h1>Lightning Calendar Core - Interactive Demo</h1>
                 <nav>
                     <a href="index.html">Home</a>
-                    <a href="#" class="active">Demo</a>
                     <a href="https://github.com/thedhanawada/lightning-calendar-core">GitHub</a>
                 </nav>
             </div>
         </header>
 
-        <div class="demo-header">
-            <div class="demo-controls-bar">
-                <div class="control-group">
-                    <label>Timezone:</label>
-                    <select id="timezoneSelect">
-                        <option value="America/New_York">New York (EST/EDT)</option>
-                        <option value="America/Chicago">Chicago (CST/CDT)</option>
-                        <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
-                        <option value="Europe/London">London (GMT/BST)</option>
-                        <option value="Europe/Paris">Paris (CET/CEST)</option>
-                        <option value="Asia/Tokyo">Tokyo (JST)</option>
-                        <option value="Asia/Shanghai">Shanghai (CST)</option>
-                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
-                        <option value="UTC">UTC</option>
-                    </select>
-                    <span id="currentTime" class="timezone-display"></span>
-                </div>
+        <div class="demo-controls">
+            <div class="control-group">
+                <label>Timezone:</label>
+                <select id="timezoneSelect">
+                    <option value="America/New_York">America/New_York</option>
+                    <option value="America/Chicago">America/Chicago</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles</option>
+                    <option value="Europe/London">Europe/London</option>
+                    <option value="Europe/Paris">Europe/Paris</option>
+                    <option value="Asia/Tokyo">Asia/Tokyo</option>
+                    <option value="Asia/Shanghai">Asia/Shanghai</option>
+                    <option value="Australia/Sydney">Australia/Sydney</option>
+                    <option value="UTC">UTC</option>
+                </select>
+                <span id="currentTime" class="timezone-display"></span>
+            </div>
 
-                <div class="control-group">
-                    <label>View:</label>
-                    <button class="btn btn-secondary active" data-view="month">Month</button>
-                    <button class="btn btn-secondary" data-view="week">Week</button>
-                    <button class="btn btn-secondary" data-view="day">Day</button>
-                </div>
+            <div class="control-group">
+                <label>View:</label>
+                <button class="active" data-view="month">Month</button>
+                <button data-view="week">Week</button>
+                <button data-view="day">Day</button>
+                <button data-view="list">List</button>
+            </div>
 
-                <div class="control-group">
-                    <button class="btn btn-secondary" id="prevBtn">←</button>
-                    <button class="btn btn-secondary" id="todayBtn">Today</button>
-                    <button class="btn btn-secondary" id="nextBtn">→</button>
-                </div>
+            <div class="control-group">
+                <button id="prevBtn">Previous</button>
+                <button id="todayBtn">Today</button>
+                <button id="nextBtn">Next</button>
+            </div>
 
-                <div class="control-group">
-                    <button class="btn btn-primary" id="detectConflictsBtn">Detect Conflicts</button>
-                </div>
+            <div class="control-group">
+                <button id="detectConflictsBtn">Detect Conflicts</button>
+                <button id="clearBtn">Clear All</button>
             </div>
         </div>
 
         <div class="demo-container">
-            <div class="calendar-main">
-                <div class="calendar-header">
-                    <div class="calendar-title" id="calendarTitle">December 2024</div>
-                </div>
-                <div id="calendarContent">
-                    <!-- Calendar will be rendered here -->
-                </div>
+            <div id="calendar" class="calendar-container">
+                <!-- Calendar renders here -->
             </div>
 
-            <div class="sidebar">
-                <!-- Quick Add Event -->
-                <div class="sidebar-card">
+            <div class="info-panel">
+                <div class="panel-section">
                     <h3>Quick Add Event</h3>
-                    <form class="event-form" id="quickAddForm">
+                    <form class="event-form" id="eventForm">
                         <div class="form-group">
                             <label>Title</label>
-                            <input type="text" id="eventTitle" placeholder="Event title" required>
+                            <input type="text" id="eventTitle" required>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Date</label>
-                                <input type="date" id="eventDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Timezone</label>
-                                <select id="eventTimezone">
-                                    <option value="America/New_York">New York</option>
-                                    <option value="America/Los_Angeles">Los Angeles</option>
-                                    <option value="Europe/London">London</option>
-                                    <option value="Asia/Tokyo">Tokyo</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="eventDate" required>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Start Time</label>
-                                <input type="time" id="startTime" value="09:00" required>
-                            </div>
-                            <div class="form-group">
-                                <label>End Time</label>
-                                <input type="time" id="endTime" value="10:00" required>
-                            </div>
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <input type="time" id="startTime" value="09:00" required>
                         </div>
-
-                        <button type="submit" class="btn btn-primary">Add Event</button>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <input type="time" id="endTime" value="10:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select id="eventTz">
+                                <option value="America/New_York">New York</option>
+                                <option value="America/Los_Angeles">Los Angeles</option>
+                                <option value="Europe/London">London</option>
+                                <option value="Asia/Tokyo">Tokyo</option>
+                            </select>
+                        </div>
+                        <button type="submit">Add Event</button>
                     </form>
                 </div>
 
-                <!-- Timezone Comparison -->
-                <div class="sidebar-card">
-                    <h3>Multi-Timezone View</h3>
-                    <div id="timezoneEvents" class="timezone-events">
-                        <!-- Events will be shown here with times in different timezones -->
+                <div class="panel-section">
+                    <h3>Conflicts</h3>
+                    <div id="conflictInfo" class="conflict-list">
+                        <p style="color: #999;">No conflicts detected</p>
                     </div>
                 </div>
 
-                <!-- Conflicts -->
-                <div class="sidebar-card">
-                    <h3>Conflict Detection</h3>
-                    <div id="conflictList" class="conflict-list">
-                        <div style="text-align: center; color: #999; padding: 20px;">
-                            No conflicts detected
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Statistics -->
-                <div class="sidebar-card">
+                <div class="panel-section">
                     <h3>Statistics</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalEvents">0</div>
-                            <div class="stat-label">Total Events</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="todayEvents">0</div>
-                            <div class="stat-label">Today</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="conflictCount">0</div>
-                            <div class="stat-label">Conflicts</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="timezoneCount">1</div>
-                            <div class="stat-label">Timezones</div>
-                        </div>
-                    </div>
+                    <dl class="stats">
+                        <dt>Total Events</dt>
+                        <dd id="totalEvents">0</dd>
+
+                        <dt>Events Today</dt>
+                        <dd id="todayEvents">0</dd>
+
+                        <dt>Active Timezones</dt>
+                        <dd id="timezoneCount">0</dd>
+
+                        <dt>Conflicts</dt>
+                        <dd id="conflictCount">0</dd>
+                    </dl>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="demo-interactive.js"></script>
+    <script type="module">
+        // Use the existing demo.js structure but simplified
+        class CalendarDemo {
+            constructor() {
+                this.events = [];
+                this.currentView = 'month';
+                this.currentDate = new Date();
+                this.currentTimezone = 'America/New_York';
+                this.eventIdCounter = 1;
+
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadSampleEvents();
+                this.render();
+                this.updateTime();
+                setInterval(() => this.updateTime(), 1000);
+            }
+
+            setupEventListeners() {
+                // Timezone selector
+                document.getElementById('timezoneSelect').addEventListener('change', (e) => {
+                    this.currentTimezone = e.target.value;
+                    this.render();
+                    this.updateTime();
+                });
+
+                // View buttons
+                document.querySelectorAll('[data-view]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentView = e.target.dataset.view;
+                        this.render();
+                    });
+                });
+
+                // Navigation
+                document.getElementById('prevBtn').addEventListener('click', () => this.navigate(-1));
+                document.getElementById('todayBtn').addEventListener('click', () => {
+                    this.currentDate = new Date();
+                    this.render();
+                });
+                document.getElementById('nextBtn').addEventListener('click', () => this.navigate(1));
+
+                // Actions
+                document.getElementById('detectConflictsBtn').addEventListener('click', () => this.detectConflicts());
+                document.getElementById('clearBtn').addEventListener('click', () => {
+                    this.events = [];
+                    this.render();
+                });
+
+                // Event form
+                document.getElementById('eventForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addEventFromForm();
+                });
+
+                // Set today as default date
+                document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+            }
+
+            loadSampleEvents() {
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                this.events = [
+                    {
+                        id: this.eventIdCounter++,
+                        title: 'NY Team Standup',
+                        start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0),
+                        end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30),
+                        timezone: 'America/New_York'
+                    },
+                    {
+                        id: this.eventIdCounter++,
+                        title: 'London Client Call',
+                        start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0),
+                        end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0),
+                        timezone: 'Europe/London'
+                    },
+                    {
+                        id: this.eventIdCounter++,
+                        title: 'Tokyo Product Review',
+                        start: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0),
+                        end: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 11, 0),
+                        timezone: 'Asia/Tokyo'
+                    },
+                    {
+                        id: this.eventIdCounter++,
+                        title: 'Quarterly Planning',
+                        start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5, 13, 0),
+                        end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5, 15, 0),
+                        timezone: 'America/Los_Angeles'
+                    }
+                ];
+
+                // Add some recurring weekly events
+                for (let week = 0; week < 4; week++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() + (week * 7) + 1); // Tuesday
+                    this.events.push({
+                        id: this.eventIdCounter++,
+                        title: 'Weekly Sync',
+                        start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 0),
+                        end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0),
+                        timezone: 'America/New_York',
+                        recurring: true
+                    });
+                }
+
+                this.updateStats();
+            }
+
+            addEventFromForm() {
+                const title = document.getElementById('eventTitle').value;
+                const date = document.getElementById('eventDate').value;
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                const timezone = document.getElementById('eventTz').value;
+
+                const [year, month, day] = date.split('-').map(Number);
+                const [startHour, startMin] = startTime.split(':').map(Number);
+                const [endHour, endMin] = endTime.split(':').map(Number);
+
+                this.events.push({
+                    id: this.eventIdCounter++,
+                    title: title,
+                    start: new Date(year, month - 1, day, startHour, startMin),
+                    end: new Date(year, month - 1, day, endHour, endMin),
+                    timezone: timezone
+                });
+
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+
+                this.render();
+                this.updateStats();
+            }
+
+            navigate(direction) {
+                if (this.currentView === 'month') {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + direction);
+                } else if (this.currentView === 'week') {
+                    this.currentDate.setDate(this.currentDate.getDate() + (direction * 7));
+                } else {
+                    this.currentDate.setDate(this.currentDate.getDate() + direction);
+                }
+                this.render();
+            }
+
+            detectConflicts() {
+                const conflicts = [];
+                for (let i = 0; i < this.events.length; i++) {
+                    for (let j = i + 1; j < this.events.length; j++) {
+                        const e1 = this.events[i];
+                        const e2 = this.events[j];
+                        if (e1.start < e2.end && e2.start < e1.end) {
+                            conflicts.push({ e1, e2 });
+                        }
+                    }
+                }
+
+                const container = document.getElementById('conflictInfo');
+                if (conflicts.length === 0) {
+                    container.innerHTML = '<p style="color: #999;">No conflicts detected</p>';
+                } else {
+                    container.innerHTML = conflicts.map(c =>
+                        `<div class="conflict-item">${c.e1.title} conflicts with ${c.e2.title}</div>`
+                    ).join('');
+                }
+
+                document.getElementById('conflictCount').textContent = conflicts.length;
+            }
+
+            updateTime() {
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: this.currentTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZoneName: 'short'
+                });
+                document.getElementById('currentTime').textContent = formatter.format(now);
+            }
+
+            updateStats() {
+                const today = new Date();
+                const todayEvents = this.events.filter(e =>
+                    e.start.toDateString() === today.toDateString()
+                );
+
+                const timezones = new Set(this.events.map(e => e.timezone));
+
+                document.getElementById('totalEvents').textContent = this.events.length;
+                document.getElementById('todayEvents').textContent = todayEvents.length;
+                document.getElementById('timezoneCount').textContent = timezones.size;
+            }
+
+            render() {
+                const container = document.getElementById('calendar');
+
+                switch (this.currentView) {
+                    case 'month':
+                        this.renderMonth(container);
+                        break;
+                    case 'week':
+                        this.renderWeek(container);
+                        break;
+                    case 'day':
+                        this.renderDay(container);
+                        break;
+                    case 'list':
+                        this.renderList(container);
+                        break;
+                }
+
+                this.updateStats();
+            }
+
+            renderMonth(container) {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startDate = new Date(firstDay);
+                startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                                  'July', 'August', 'September', 'October', 'November', 'December'];
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+                let html = `
+                    <div class="calendar-header">
+                        ${monthNames[month]} ${year}
+                    </div>
+                    <div class="weekday-headers">
+                        ${dayNames.map(d => `<div class="weekday">${d}</div>`).join('')}
+                    </div>
+                    <div class="month-days">
+                `;
+
+                for (let i = 0; i < 42; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(startDate.getDate() + i);
+                    const isToday = date.toDateString() === new Date().toDateString();
+                    const isOtherMonth = date.getMonth() !== month;
+                    const dayEvents = this.getEventsForDate(date);
+
+                    html += `
+                        <div class="calendar-day ${isToday ? 'today' : ''} ${isOtherMonth ? 'other-month' : ''}">
+                            <div class="day-number">${date.getDate()}</div>
+                            ${dayEvents.slice(0, 3).map(e => `
+                                <div class="calendar-event" title="${e.title} (${e.timezone})">
+                                    ${this.formatTime(e.start)} ${e.title}
+                                </div>
+                            `).join('')}
+                            ${dayEvents.length > 3 ? `<div class="more-events">+${dayEvents.length - 3} more</div>` : ''}
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            renderWeek(container) {
+                const startOfWeek = new Date(this.currentDate);
+                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+                let html = `<div class="week-view">`;
+
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(startOfWeek);
+                    date.setDate(startOfWeek.getDate() + i);
+                    const dayEvents = this.getEventsForDate(date);
+
+                    html += `
+                        <div class="week-day">
+                            <h4>${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h4>
+                            ${dayEvents.map(e => `
+                                <div class="calendar-event">
+                                    ${this.formatTime(e.start)} - ${e.title}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            renderDay(container) {
+                const dayEvents = this.getEventsForDate(this.currentDate);
+
+                let html = `
+                    <div class="day-view">
+                        <div class="calendar-header">
+                            ${this.currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                        </div>
+                `;
+
+                for (let hour = 8; hour <= 18; hour++) {
+                    const hourEvents = dayEvents.filter(e => e.start.getHours() === hour);
+                    html += `
+                        <div class="hour-slot">
+                            <div class="hour-time">${hour}:00</div>
+                            <div>
+                                ${hourEvents.map(e => `
+                                    <div class="calendar-event">
+                                        ${e.title}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            renderList(container) {
+                const sortedEvents = [...this.events].sort((a, b) => a.start - b.start);
+
+                let html = `
+                    <div class="list-view">
+                        <div class="calendar-header">All Events</div>
+                `;
+
+                let currentDate = null;
+                sortedEvents.forEach(event => {
+                    const dateStr = event.start.toDateString();
+                    if (dateStr !== currentDate) {
+                        currentDate = dateStr;
+                        html += `<h4 style="margin: 15px 0 5px 0; padding: 5px; background: #f5f5f5;">
+                            ${event.start.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                        </h4>`;
+                    }
+                    html += `
+                        <div class="calendar-event list-item">
+                            <span class="event-time">${this.formatTime(event.start)}</span>
+                            ${event.title}
+                            <span style="color: #666; font-size: 11px;">(${event.timezone})</span>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            getEventsForDate(date) {
+                return this.events.filter(event =>
+                    event.start.toDateString() === date.toDateString()
+                );
+            }
+
+            formatTime(date) {
+                return date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                }).toLowerCase().replace(' ', '');
+            }
+        }
+
+        // Initialize
+        new CalendarDemo();
+    </script>
 </body>
 </html>
