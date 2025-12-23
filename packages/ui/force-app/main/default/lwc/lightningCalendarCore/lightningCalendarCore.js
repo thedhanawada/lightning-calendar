@@ -122,23 +122,22 @@ export default class LightningCalendarCore extends LightningElement {
         const weeks = [];
         const { weeks: coreWeeks } = this.viewData;
 
-        if (coreWeeks) {
+        if (coreWeeks && Array.isArray(coreWeeks)) {
             coreWeeks.forEach(week => {
-                const days = week.dates.map(date => {
-                    const dayEvents = this.getEventsForDate(date);
-                    const isToday = this.isToday(date);
-                    const isOtherMonth = date.getMonth() !== this.currentDate.getMonth();
-                    return {
-                        date: date,
-                        dayNumber: date.getDate(),
-                        isToday: isToday,
-                        isOtherMonth: isOtherMonth,
-                        dayClass: this.getDayClass(isToday, isOtherMonth),
-                        events: dayEvents,
-                        hasEvents: dayEvents.length > 0
-                    };
-                });
-                weeks.push({ days });
+                if (week && week.days && Array.isArray(week.days)) {
+                    const days = week.days.map(dayData => {
+                        return {
+                            date: dayData.date.toISOString(),
+                            dayNumber: dayData.dayOfMonth,
+                            isToday: dayData.isToday,
+                            isOtherMonth: !dayData.isCurrentMonth,
+                            dayClass: this.getDayClass(dayData.isToday, !dayData.isCurrentMonth),
+                            events: dayData.events || [],
+                            hasEvents: dayData.events && dayData.events.length > 0
+                        };
+                    });
+                    weeks.push({ days });
+                }
             });
         }
 
