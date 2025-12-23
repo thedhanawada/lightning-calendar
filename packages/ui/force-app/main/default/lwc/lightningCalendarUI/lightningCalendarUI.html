@@ -6,25 +6,25 @@
                 <lightning-button
                     label="Month"
                     data-view="month"
-                    variant={isMonthView ? 'brand' : 'neutral'}
+                    variant={monthViewVariant}
                     onclick={handleViewChange}>
                 </lightning-button>
                 <lightning-button
                     label="Week"
                     data-view="week"
-                    variant={isWeekView ? 'brand' : 'neutral'}
+                    variant={weekViewVariant}
                     onclick={handleViewChange}>
                 </lightning-button>
                 <lightning-button
                     label="Day"
                     data-view="day"
-                    variant={isDayView ? 'brand' : 'neutral'}
+                    variant={dayViewVariant}
                     onclick={handleViewChange}>
                 </lightning-button>
                 <lightning-button
                     label="List"
                     data-view="list"
-                    variant={isListView ? 'brand' : 'neutral'}
+                    variant={listViewVariant}
                     onclick={handleViewChange}>
                 </lightning-button>
             </lightning-button-group>
@@ -67,7 +67,7 @@
                                 <template for:each={week.days} for:item="day">
                                     <div
                                         key={day.date}
-                                        class={day.isToday ? 'calendar-day today' : day.isOtherMonth ? 'calendar-day other-month' : 'calendar-day'}
+                                        class={day.dayClass}
                                         data-date={day.date}
                                         onclick={handleDateClick}>
 

@@ -126,11 +126,14 @@ export default class LightningCalendarUI extends LightningElement {
             coreWeeks.forEach(week => {
                 const days = week.dates.map(date => {
                     const dayEvents = this.getEventsForDate(date);
+                    const isToday = this.isToday(date);
+                    const isOtherMonth = date.getMonth() !== this.currentDate.getMonth();
                     return {
                         date: date,
                         dayNumber: date.getDate(),
-                        isToday: this.isToday(date),
-                        isOtherMonth: date.getMonth() !== this.currentDate.getMonth(),
+                        isToday: isToday,
+                        isOtherMonth: isOtherMonth,
+                        dayClass: this.getDayClass(isToday, isOtherMonth),
                         events: dayEvents,
                         hasEvents: dayEvents.length > 0
                     };
@@ -144,6 +147,22 @@ export default class LightningCalendarUI extends LightningElement {
 
     get weekDayNames() {
         return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    }
+
+    get monthViewVariant() {
+        return this.currentView === 'month' ? 'brand' : 'neutral';
+    }
+
+    get weekViewVariant() {
+        return this.currentView === 'week' ? 'brand' : 'neutral';
+    }
+
+    get dayViewVariant() {
+        return this.currentView === 'day' ? 'brand' : 'neutral';
+    }
+
+    get listViewVariant() {
+        return this.currentView === 'list' ? 'brand' : 'neutral';
     }
 
     // Event handlers
@@ -203,6 +222,16 @@ export default class LightningCalendarUI extends LightningElement {
     isToday(date) {
         const today = new Date();
         return date.toDateString() === today.toDateString();
+    }
+
+    getDayClass(isToday, isOtherMonth) {
+        if (isToday) {
+            return 'calendar-day today';
+        }
+        if (isOtherMonth) {
+            return 'calendar-day other-month';
+        }
+        return 'calendar-day';
     }
 
     getMonthName(monthIndex) {
