@@ -5190,6 +5190,11 @@ class Calendar {
    * @returns {import('../events/Event.js').Event} The added event
    */
   addEvent(eventData) {
+    // If eventData is not an Event instance and doesn't have a timezone, use calendar's timezone
+    if (!(eventData instanceof Event) && !eventData.timeZone) {
+      eventData = { ...eventData, timeZone: this.config.timeZone };
+    }
+
     const event = this.eventStore.addEvent(eventData);
 
     this._emit('eventAdd', { event });
@@ -5486,6 +5491,7 @@ class Calendar {
       const dayDate = new Date(currentDate);
       days.push({
         date: dayDate,
+        dayOfMonth: dayDate.getDate(),
         dayOfWeek: dayDate.getDay(),
         dayName: DateUtils.getDayName(dayDate, this.state.get('locale')),
         isToday: DateUtils.isToday(dayDate),
