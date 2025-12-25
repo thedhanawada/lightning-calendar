@@ -46,13 +46,11 @@ export default {
             preferBuiltins: false
         }),
 
-        // Replace environment variables
+        // Replace environment variables (if needed in future)
         replace({
             preventAssignment: true,
             values: {
-                '__BUILD_VERSION__': JSON.stringify(process.env.npm_package_version || 'development'),
-                '__BUILD_DATE__': JSON.stringify(new Date().toISOString()),
-                '__DEV__': !production
+                'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development')
             }
         }),
 
@@ -63,16 +61,18 @@ export default {
                     src: 'css/*.css',
                     dest: 'dist/css',
                     transform: (contents) => {
+                        // Ensure contents is a string
+                        const content = contents.toString();
                         if (production) {
                             // Minify CSS
-                            return contents
+                            return content
                                 .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
                                 .replace(/\s+/g, ' ') // Collapse whitespace
                                 .replace(/:\s+/g, ':') // Remove spaces after colons
                                 .replace(/;\s+/g, ';') // Remove spaces after semicolons
                                 .trim();
                         }
-                        return contents;
+                        return content;
                     }
                 },
                 {
@@ -80,15 +80,17 @@ export default {
                     dest: 'dist',
                     rename: 'index.html',
                     transform: (contents) => {
+                        // Ensure contents is a string
+                        const content = contents.toString();
                         if (production) {
                             // Update paths for production
-                            return contents
+                            return content
                                 .replace(/js\/app\.js/g, 'demo.min.js')
                                 .replace(/css\//g, 'dist/css/')
                                 .replace(/<!--dev-->/g, '<!--')
                                 .replace(/<!--\/dev-->/g, '-->');
                         }
-                        return contents;
+                        return content;
                     }
                 }
             ]

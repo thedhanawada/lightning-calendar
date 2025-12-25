@@ -305,7 +305,7 @@ export class ErrorHandler {
      * Get build version
      */
     getBuildVersion() {
-        return window.__BUILD_VERSION__ || 'development';
+        return 'development';
     }
 
     /**
