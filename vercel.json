@@ -1,5 +1,5 @@
 {
-  "buildCommand": "ls -la && ls -la demo/ && cd demo && npm install && npm run build",
+  "buildCommand": "cd demo && npm install && npm run build",
   "outputDirectory": "demo/dist",
   "installCommand": "npm install",
   "framework": null,
