@@ -1,6 +1,7 @@
 {
   "name": "lightning-calendar-core",
   "version": "0.2.0",
+  "type": "module",
   "private": false,
   "description": "A modern, lightweight, framework-agnostic calendar engine optimized for Salesforce Lightning",
   "main": "core/index.js",
