@@ -1,5 +1,5 @@
 {
-  "name": "force-calendar-core",
+  "name": "@forcecalendar/core",
   "version": "0.2.0",
   "type": "module",
   "private": false,
@@ -35,7 +35,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thedhanawada/force-calendar-core.git"
+    "url": "git+https://github.com/ForceCalendar/force-calendar-core.git"
   },
   "keywords": [
     "calendar",
@@ -51,9 +51,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thedhanawada/force-calendar-core/issues"
+    "url": "https://github.com/ForceCalendar/force-calendar-core/issues"
   },
-  "homepage": "https://github.com/thedhanawada/force-calendar-core#readme",
+  "homepage": "https://github.com/ForceCalendar/force-calendar-core#readme",
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",

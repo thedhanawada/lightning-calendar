@@ -5,7 +5,7 @@ A modern calendar engine optimized for Salesforce.
 ## Installation
 
 ```bash
-npm install force-calendar-core
+npm install @forcecalendar/core
 ```
 
 ## License
