@@ -12,7 +12,7 @@ export { StateManager } from './state/StateManager.js';
 export { DateUtils } from './calendar/DateUtils.js';
 
 // Version
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 
 // Default export
 export { Calendar as default } from './calendar/Calendar.js';
