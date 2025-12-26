@@ -1,18 +1,123 @@
 /**
- * TimezoneManager - Comprehensive timezone handling for global calendar operations
- * Handles timezone conversions, DST transitions, and IANA timezone database
- *
- * Critical for Salesforce orgs spanning multiple timezones
+ * TimezoneDatabase - Comprehensive IANA timezone database
+ * Contains timezone rules for all major zones worldwide
  */
 
-class TimezoneManager {
+class TimezoneDatabase {
     constructor() {
-        // Cache timezone offsets for performance
-        this.offsetCache = new Map();
-        this.dstCache = new Map();
+        // Comprehensive IANA timezone offset data (Standard Time)
+        // Offsets in minutes from UTC
+        this.timezones = {
+            // UTC
+            'UTC': { offset: 0, dst: null },
+            'GMT': { offset: 0, dst: null },
 
-        // Common timezone abbreviations to IANA mapping
-        this.timezoneAbbreviations = {
+            // Africa
+            'Africa/Abidjan': { offset: 0, dst: null },
+            'Africa/Accra': { offset: 0, dst: null },
+            'Africa/Addis_Ababa': { offset: 180, dst: null },
+            'Africa/Algiers': { offset: 60, dst: null },
+            'Africa/Cairo': { offset: 120, dst: null },
+            'Africa/Casablanca': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Africa/Johannesburg': { offset: 120, dst: null },
+            'Africa/Lagos': { offset: 60, dst: null },
+            'Africa/Nairobi': { offset: 180, dst: null },
+
+            // Americas
+            'America/Anchorage': { offset: -540, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Argentina/Buenos_Aires': { offset: -180, dst: null },
+            'America/Bogota': { offset: -300, dst: null },
+            'America/Caracas': { offset: -240, dst: null },
+            'America/Chicago': { offset: -360, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Denver': { offset: -420, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Detroit': { offset: -300, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Halifax': { offset: -240, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Los_Angeles': { offset: -480, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Mexico_City': { offset: -360, dst: { start: { month: 4, week: 1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'America/New_York': { offset: -300, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Phoenix': { offset: -420, dst: null },
+            'America/Regina': { offset: -360, dst: null },
+            'America/Santiago': { offset: -180, dst: { start: { month: 9, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+            'America/Sao_Paulo': { offset: -180, dst: { start: { month: 10, week: 3, day: 0 }, end: { month: 2, week: 3, day: 0 }, offset: 60 }},
+            'America/St_Johns': { offset: -210, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Toronto': { offset: -300, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'America/Vancouver': { offset: -480, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+
+            // Asia
+            'Asia/Baghdad': { offset: 180, dst: null },
+            'Asia/Bangkok': { offset: 420, dst: null },
+            'Asia/Dubai': { offset: 240, dst: null },
+            'Asia/Hong_Kong': { offset: 480, dst: null },
+            'Asia/Jakarta': { offset: 420, dst: null },
+            'Asia/Jerusalem': { offset: 120, dst: { start: { month: 3, week: -1, day: 5 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Asia/Karachi': { offset: 300, dst: null },
+            'Asia/Kolkata': { offset: 330, dst: null },
+            'Asia/Kuala_Lumpur': { offset: 480, dst: null },
+            'Asia/Manila': { offset: 480, dst: null },
+            'Asia/Seoul': { offset: 540, dst: null },
+            'Asia/Shanghai': { offset: 480, dst: null },
+            'Asia/Singapore': { offset: 480, dst: null },
+            'Asia/Taipei': { offset: 480, dst: null },
+            'Asia/Tehran': { offset: 210, dst: { start: { month: 3, week: 4, day: 0 }, end: { month: 9, week: 4, day: 0 }, offset: 60 }},
+            'Asia/Tokyo': { offset: 540, dst: null },
+
+            // Atlantic
+            'Atlantic/Azores': { offset: -60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Atlantic/Bermuda': { offset: -240, dst: { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 60 }},
+            'Atlantic/Reykjavik': { offset: 0, dst: null },
+
+            // Australia & Pacific
+            'Australia/Adelaide': { offset: 570, dst: { start: { month: 10, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+            'Australia/Brisbane': { offset: 600, dst: null },
+            'Australia/Darwin': { offset: 570, dst: null },
+            'Australia/Hobart': { offset: 600, dst: { start: { month: 10, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+            'Australia/Melbourne': { offset: 600, dst: { start: { month: 10, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+            'Australia/Perth': { offset: 480, dst: null },
+            'Australia/Sydney': { offset: 600, dst: { start: { month: 10, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+
+            // Europe
+            'Europe/Amsterdam': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Athens': { offset: 120, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Berlin': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Brussels': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Budapest': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Copenhagen': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Dublin': { offset: 0, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Helsinki': { offset: 120, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Istanbul': { offset: 180, dst: null },
+            'Europe/Kiev': { offset: 120, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Lisbon': { offset: 0, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/London': { offset: 0, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Madrid': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Moscow': { offset: 180, dst: null },
+            'Europe/Oslo': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Paris': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Prague': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Rome': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Stockholm': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Vienna': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Warsaw': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+            'Europe/Zurich': { offset: 60, dst: { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 60 }},
+
+            // Indian
+            'Indian/Maldives': { offset: 300, dst: null },
+            'Indian/Mauritius': { offset: 240, dst: null },
+
+            // Pacific
+            'Pacific/Auckland': { offset: 720, dst: { start: { month: 9, week: -1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 60 }},
+            'Pacific/Fiji': { offset: 720, dst: { start: { month: 11, week: 1, day: 0 }, end: { month: 1, week: 3, day: 0 }, offset: 60 }},
+            'Pacific/Guam': { offset: 600, dst: null },
+            'Pacific/Honolulu': { offset: -600, dst: null },
+            'Pacific/Midway': { offset: -660, dst: null },
+            'Pacific/Noumea': { offset: 660, dst: null },
+            'Pacific/Pago_Pago': { offset: -660, dst: null },
+            'Pacific/Port_Moresby': { offset: 600, dst: null },
+            'Pacific/Tahiti': { offset: -600, dst: null }
+        };
+
+        // Timezone aliases and abbreviations
+        this.aliases = {
+            // Common abbreviations to IANA
             'EST': 'America/New_York',
             'EDT': 'America/New_York',
             'CST': 'America/Chicago',
@@ -21,44 +126,194 @@ class TimezoneManager {
             'MDT': 'America/Denver',
             'PST': 'America/Los_Angeles',
             'PDT': 'America/Los_Angeles',
-            'GMT': 'Europe/London',
+            'AKST': 'America/Anchorage',
+            'AKDT': 'America/Anchorage',
+            'HST': 'Pacific/Honolulu',
+            'AST': 'America/Halifax',
+            'ADT': 'America/Halifax',
+            'NST': 'America/St_Johns',
+            'NDT': 'America/St_Johns',
             'BST': 'Europe/London',
+            'IST': 'Asia/Kolkata',
+            'WET': 'Europe/Lisbon',
+            'WEST': 'Europe/Lisbon',
             'CET': 'Europe/Paris',
             'CEST': 'Europe/Paris',
+            'EET': 'Europe/Athens',
+            'EEST': 'Europe/Athens',
+            'MSK': 'Europe/Moscow',
             'JST': 'Asia/Tokyo',
-            'IST': 'Asia/Kolkata',
+            'KST': 'Asia/Seoul',
+            'CST_CN': 'Asia/Shanghai',
+            'HKT': 'Asia/Hong_Kong',
+            'SGT': 'Asia/Singapore',
             'AEST': 'Australia/Sydney',
-            'AEDT': 'Australia/Sydney'
-        };
+            'AEDT': 'Australia/Sydney',
+            'ACST': 'Australia/Adelaide',
+            'ACDT': 'Australia/Adelaide',
+            'AWST': 'Australia/Perth',
+            'NZST': 'Pacific/Auckland',
+            'NZDT': 'Pacific/Auckland',
 
-        // IANA timezone offset rules (simplified - in production would use Intl API or timezone database)
-        this.timezoneOffsets = {
-            'UTC': 0,
-            'America/New_York': -5,
-            'America/Chicago': -6,
-            'America/Denver': -7,
-            'America/Los_Angeles': -8,
-            'America/Phoenix': -7, // No DST
-            'Europe/London': 0,
-            'Europe/Paris': 1,
-            'Europe/Berlin': 1,
-            'Asia/Tokyo': 9,
-            'Asia/Shanghai': 8,
-            'Asia/Kolkata': 5.5,
-            'Australia/Sydney': 10,
-            'Pacific/Auckland': 12
+            // City/Country aliases
+            'US/Eastern': 'America/New_York',
+            'US/Central': 'America/Chicago',
+            'US/Mountain': 'America/Denver',
+            'US/Pacific': 'America/Los_Angeles',
+            'US/Alaska': 'America/Anchorage',
+            'US/Hawaii': 'Pacific/Honolulu',
+            'Canada/Eastern': 'America/Toronto',
+            'Canada/Central': 'America/Regina',
+            'Canada/Mountain': 'America/Denver',
+            'Canada/Pacific': 'America/Vancouver',
+            'Canada/Atlantic': 'America/Halifax',
+            'Canada/Newfoundland': 'America/St_Johns',
+            'Mexico/General': 'America/Mexico_City',
+            'Brazil/East': 'America/Sao_Paulo',
+            'Chile/Continental': 'America/Santiago',
+            'GB': 'Europe/London',
+            'GB-Eire': 'Europe/London',
+            'Eire': 'Europe/Dublin',
+            'Israel': 'Asia/Jerusalem',
+            'Japan': 'Asia/Tokyo',
+            'Singapore': 'Asia/Singapore',
+            'Hongkong': 'Asia/Hong_Kong',
+            'ROK': 'Asia/Seoul',
+            'PRC': 'Asia/Shanghai',
+            'Australia/NSW': 'Australia/Sydney',
+            'Australia/Victoria': 'Australia/Melbourne',
+            'Australia/Queensland': 'Australia/Brisbane',
+            'Australia/South': 'Australia/Adelaide',
+            'Australia/Tasmania': 'Australia/Hobart',
+            'Australia/West': 'Australia/Perth',
+            'Australia/North': 'Australia/Darwin',
+            'NZ': 'Pacific/Auckland'
         };
+    }
 
-        // DST rules (simplified - real implementation would be more complex)
-        this.dstRules = {
-            'America/New_York': { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 1 },
-            'America/Chicago': { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 1 },
-            'America/Denver': { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 1 },
-            'America/Los_Angeles': { start: { month: 3, week: 2, day: 0 }, end: { month: 11, week: 1, day: 0 }, offset: 1 },
-            'Europe/London': { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 1 },
-            'Europe/Paris': { start: { month: 3, week: -1, day: 0 }, end: { month: 10, week: -1, day: 0 }, offset: 1 },
-            'Australia/Sydney': { start: { month: 10, week: 1, day: 0 }, end: { month: 4, week: 1, day: 0 }, offset: 1 }
+    /**
+     * Get timezone data by identifier
+     * @param {string} timezone - Timezone identifier or alias
+     * @returns {Object|null} Timezone data or null if not found
+     */
+    getTimezone(timezone) {
+        // Check for alias first
+        if (this.aliases[timezone]) {
+            timezone = this.aliases[timezone];
+        }
+
+        return this.timezones[timezone] || null;
+    }
+
+    /**
+     * Get all available timezone identifiers
+     * @returns {string[]} Array of timezone identifiers
+     */
+    getAllTimezones() {
+        return Object.keys(this.timezones);
+    }
+
+    /**
+     * Check if a timezone identifier is valid
+     * @param {string} timezone - Timezone identifier
+     * @returns {boolean} True if valid
+     */
+    isValidTimezone(timezone) {
+        return this.aliases[timezone] !== undefined || this.timezones[timezone] !== undefined;
+    }
+
+    /**
+     * Resolve timezone alias to canonical identifier
+     * @param {string} timezone - Timezone identifier or alias
+     * @returns {string} Canonical timezone identifier
+     */
+    resolveAlias(timezone) {
+        return this.aliases[timezone] || timezone;
+    }
+
+    /**
+     * Get timezones by offset
+     * @param {number} offsetMinutes - Offset in minutes from UTC
+     * @returns {string[]} Array of timezone identifiers
+     */
+    getTimezonesByOffset(offsetMinutes) {
+        return Object.entries(this.timezones)
+            .filter(([_, data]) => data.offset === offsetMinutes)
+            .map(([id, _]) => id);
+    }
+
+    /**
+     * Get common timezones for quick selection
+     * @returns {Object} Grouped timezones by region
+     */
+    getCommonTimezones() {
+        return {
+            'Americas': [
+                'America/New_York',
+                'America/Chicago',
+                'America/Denver',
+                'America/Los_Angeles',
+                'America/Toronto',
+                'America/Mexico_City',
+                'America/Sao_Paulo'
+            ],
+            'Europe': [
+                'Europe/London',
+                'Europe/Paris',
+                'Europe/Berlin',
+                'Europe/Moscow',
+                'Europe/Rome',
+                'Europe/Madrid',
+                'Europe/Amsterdam'
+            ],
+            'Asia': [
+                'Asia/Tokyo',
+                'Asia/Shanghai',
+                'Asia/Hong_Kong',
+                'Asia/Singapore',
+                'Asia/Kolkata',
+                'Asia/Dubai',
+                'Asia/Seoul'
+            ],
+            'Australia/Pacific': [
+                'Australia/Sydney',
+                'Australia/Melbourne',
+                'Australia/Brisbane',
+                'Australia/Perth',
+                'Pacific/Auckland',
+                'Pacific/Honolulu'
+            ],
+            'Africa': [
+                'Africa/Cairo',
+                'Africa/Lagos',
+                'Africa/Johannesburg',
+                'Africa/Nairobi'
+            ]
         };
+    }
+}
+
+/**
+ * TimezoneManager - Comprehensive timezone handling for global calendar operations
+ * Handles timezone conversions, DST transitions, and IANA timezone database
+ *
+ * Critical for Salesforce orgs spanning multiple timezones
+ */
+
+
+class TimezoneManager {
+    constructor() {
+        // Initialize comprehensive timezone database
+        this.database = new TimezoneDatabase();
+
+        // Cache timezone offsets for performance
+        this.offsetCache = new Map();
+        this.dstCache = new Map();
+
+        // Cache size management
+        this.maxCacheSize = 1000;
+        this.cacheHits = 0;
+        this.cacheMisses = 0;
     }
 
     /**
@@ -115,11 +370,18 @@ class TimezoneManager {
      * @returns {number} Offset in minutes from UTC
      */
     getTimezoneOffset(date, timezone) {
+        // Resolve any aliases
+        timezone = this.database.resolveAlias(timezone);
+
         // Check cache first
         const cacheKey = `${timezone}_${date.getFullYear()}_${date.getMonth()}_${date.getDate()}`;
         if (this.offsetCache.has(cacheKey)) {
+            this.cacheHits++;
+            this._manageCacheSize();
             return this.offsetCache.get(cacheKey);
         }
+
+        this.cacheMisses++;
 
         // Try using Intl API if available (best option for browser/Node.js environments)
         if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
@@ -148,36 +410,45 @@ class TimezoneManager {
 
                 const offset = (tzDate.getTime() - date.getTime()) / (1000 * 60);
                 this.offsetCache.set(cacheKey, -offset);
+                this._manageCacheSize();
                 return -offset;
             } catch (e) {
-                // Fallback to manual calculation
+                // Fallback to database calculation
             }
         }
 
-        // Fallback: Manual calculation
-        let baseOffset = (this.timezoneOffsets[timezone] || 0) * 60;
+        // Fallback: Use timezone database
+        const tzData = this.database.getTimezone(timezone);
+        if (!tzData) {
+            throw new Error(`Unknown timezone: ${timezone}`);
+        }
+
+        let offset = tzData.offset;
 
         // Apply DST if applicable
-        if (this.isDST(date, timezone)) {
-            const dstRule = this.dstRules[timezone];
-            if (dstRule) {
-                baseOffset += dstRule.offset * 60;
-            }
+        if (tzData.dst && this.isDST(date, timezone, tzData.dst)) {
+            offset += tzData.dst.offset;
         }
 
-        this.offsetCache.set(cacheKey, baseOffset);
-        return baseOffset;
+        this.offsetCache.set(cacheKey, offset);
+        this._manageCacheSize();
+        return offset;
     }
 
     /**
      * Check if date is in DST for given timezone
      * @param {Date} date - Date to check
      * @param {string} timezone - Timezone identifier
+     * @param {Object} [dstRule] - DST rule object (optional, will fetch if not provided)
      * @returns {boolean} True if in DST
      */
-    isDST(date, timezone) {
-        const dstRule = this.dstRules[timezone];
-        if (!dstRule) return false;
+    isDST(date, timezone, dstRule = null) {
+        // Get DST rule if not provided
+        if (!dstRule) {
+            const tzData = this.database.getTimezone(timezone);
+            if (!tzData || !tzData.dst) return false;
+            dstRule = tzData.dst;
+        }
 
         const year = date.getFullYear();
         const dstStart = this.getNthWeekdayOfMonth(year, dstRule.start.month, dstRule.start.week, dstRule.start.day);
@@ -384,6 +655,60 @@ class TimezoneManager {
     clearCache() {
         this.offsetCache.clear();
         this.dstCache.clear();
+        this.cacheHits = 0;
+        this.cacheMisses = 0;
+    }
+
+    /**
+     * Validate timezone identifier
+     * @param {string} timezone - Timezone to validate
+     * @returns {boolean} True if valid
+     */
+    isValidTimezone(timezone) {
+        return this.database.isValidTimezone(timezone);
+    }
+
+    /**
+     * Get cache statistics
+     * @returns {Object} Cache stats
+     */
+    getCacheStats() {
+        const hitRate = this.cacheHits + this.cacheMisses > 0
+            ? (this.cacheHits / (this.cacheHits + this.cacheMisses) * 100).toFixed(2)
+            : 0;
+
+        return {
+            offsetCacheSize: this.offsetCache.size,
+            dstCacheSize: this.dstCache.size,
+            maxCacheSize: this.maxCacheSize,
+            cacheHits: this.cacheHits,
+            cacheMisses: this.cacheMisses,
+            hitRate: `${hitRate}%`
+        };
+    }
+
+    /**
+     * Manage cache size - evict old entries if needed
+     * @private
+     */
+    _manageCacheSize() {
+        // Clear caches if they get too large
+        if (this.offsetCache.size > this.maxCacheSize) {
+            // Remove first half of entries (oldest)
+            const entriesToRemove = Math.floor(this.offsetCache.size / 2);
+            const keys = Array.from(this.offsetCache.keys());
+            for (let i = 0; i < entriesToRemove; i++) {
+                this.offsetCache.delete(keys[i]);
+            }
+        }
+
+        if (this.dstCache.size > this.maxCacheSize / 2) {
+            const entriesToRemove = Math.floor(this.dstCache.size / 2);
+            const keys = Array.from(this.dstCache.keys());
+            for (let i = 0; i < entriesToRemove; i++) {
+                this.dstCache.delete(keys[i]);
+            }
+        }
     }
 }
 
@@ -1826,8 +2151,429 @@ class DateUtils {
 }
 
 /**
+ * RRuleParser - Full RFC 5545 compliant RRULE parser
+ * Supports all RFC 5545 recurrence rule features
+ */
+
+class RRuleParser {
+    /**
+     * Parse an RRULE string into a structured rule object
+     * @param {string|Object} rrule - RRULE string or rule object
+     * @returns {Object} Parsed rule object
+     */
+    static parse(rrule) {
+        // If already an object, validate and return
+        if (typeof rrule === 'object') {
+            return this.validateRule(rrule);
+        }
+
+        const rule = {
+            freq: null,
+            interval: 1,
+            count: null,
+            until: null,
+            byDay: [],
+            byWeekNo: [],
+            byMonth: [],
+            byMonthDay: [],
+            byYearDay: [],
+            bySetPos: [],
+            byHour: [],
+            byMinute: [],
+            bySecond: [],
+            wkst: 'MO', // Week start day
+            exceptions: [],
+            tzid: null
+        };
+
+        // Parse RRULE string
+        const parts = rrule.toUpperCase().split(';');
+
+        for (const part of parts) {
+            const [key, value] = part.split('=');
+
+            switch (key) {
+                case 'FREQ':
+                    rule.freq = this.parseFrequency(value);
+                    break;
+
+                case 'INTERVAL':
+                    rule.interval = parseInt(value, 10);
+                    if (rule.interval < 1) rule.interval = 1;
+                    break;
+
+                case 'COUNT':
+                    rule.count = parseInt(value, 10);
+                    break;
+
+                case 'UNTIL':
+                    rule.until = this.parseDateTime(value);
+                    break;
+
+                case 'BYDAY':
+                    rule.byDay = this.parseByDay(value);
+                    break;
+
+                case 'BYWEEKNO':
+                    rule.byWeekNo = this.parseIntList(value);
+                    break;
+
+                case 'BYMONTH':
+                    rule.byMonth = this.parseIntList(value);
+                    break;
+
+                case 'BYMONTHDAY':
+                    rule.byMonthDay = this.parseIntList(value);
+                    break;
+
+                case 'BYYEARDAY':
+                    rule.byYearDay = this.parseIntList(value);
+                    break;
+
+                case 'BYSETPOS':
+                    rule.bySetPos = this.parseIntList(value);
+                    break;
+
+                case 'BYHOUR':
+                    rule.byHour = this.parseIntList(value);
+                    break;
+
+                case 'BYMINUTE':
+                    rule.byMinute = this.parseIntList(value);
+                    break;
+
+                case 'BYSECOND':
+                    rule.bySecond = this.parseIntList(value);
+                    break;
+
+                case 'WKST':
+                    rule.wkst = value;
+                    break;
+
+                case 'EXDATE':
+                    rule.exceptions = this.parseExceptionDates(value);
+                    break;
+
+                case 'TZID':
+                    rule.tzid = value;
+                    break;
+            }
+        }
+
+        return this.validateRule(rule);
+    }
+
+    /**
+     * Parse frequency value
+     * @private
+     */
+    static parseFrequency(freq) {
+        const validFrequencies = ['SECONDLY', 'MINUTELY', 'HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
+        return validFrequencies.includes(freq) ? freq : 'DAILY';
+    }
+
+    /**
+     * Parse BYDAY value
+     * @private
+     */
+    static parseByDay(value) {
+        const days = value.split(',');
+        const weekDays = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+        const result = [];
+
+        for (const day of days) {
+            const match = day.match(/^([+-]?\d*)([A-Z]{2})$/);
+            if (match) {
+                const [_, nth, weekday] = match;
+                if (weekDays.includes(weekday)) {
+                    result.push({
+                        weekday,
+                        nth: nth ? parseInt(nth, 10) : null
+                    });
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Parse comma-separated integer list
+     * @private
+     */
+    static parseIntList(value) {
+        return value.split(',').map(v => parseInt(v.trim(), 10)).filter(v => !isNaN(v));
+    }
+
+    /**
+     * Parse date/datetime value
+     * @private
+     */
+    static parseDateTime(value) {
+        // Handle different date formats
+        // YYYYMMDD
+        if (value.length === 8) {
+            const year = parseInt(value.substr(0, 4), 10);
+            const month = parseInt(value.substr(4, 2), 10) - 1;
+            const day = parseInt(value.substr(6, 2), 10);
+            return new Date(year, month, day);
+        }
+
+        // YYYYMMDDTHHMMSS
+        if (value.length === 15 && value[8] === 'T') {
+            const year = parseInt(value.substr(0, 4), 10);
+            const month = parseInt(value.substr(4, 2), 10) - 1;
+            const day = parseInt(value.substr(6, 2), 10);
+            const hour = parseInt(value.substr(9, 2), 10);
+            const minute = parseInt(value.substr(11, 2), 10);
+            const second = parseInt(value.substr(13, 2), 10);
+            return new Date(year, month, day, hour, minute, second);
+        }
+
+        // YYYYMMDDTHHMMSSZ (UTC)
+        if (value.length === 16 && value[8] === 'T' && value[15] === 'Z') {
+            const year = parseInt(value.substr(0, 4), 10);
+            const month = parseInt(value.substr(4, 2), 10) - 1;
+            const day = parseInt(value.substr(6, 2), 10);
+            const hour = parseInt(value.substr(9, 2), 10);
+            const minute = parseInt(value.substr(11, 2), 10);
+            const second = parseInt(value.substr(13, 2), 10);
+            return new Date(Date.UTC(year, month, day, hour, minute, second));
+        }
+
+        // Try standard date parse as fallback
+        return new Date(value);
+    }
+
+    /**
+     * Parse exception dates
+     * @private
+     */
+    static parseExceptionDates(value) {
+        const dates = value.split(',');
+        return dates.map(date => this.parseDateTime(date.trim()));
+    }
+
+    /**
+     * Validate and normalize rule
+     * @private
+     */
+    static validateRule(rule) {
+        // Ensure frequency is set
+        if (!rule.freq) {
+            rule.freq = 'DAILY';
+        }
+
+        // Cannot have both COUNT and UNTIL
+        if (rule.count && rule.until) {
+            throw new Error('RRULE cannot have both COUNT and UNTIL');
+        }
+
+        // Validate interval
+        if (rule.interval < 1) {
+            rule.interval = 1;
+        }
+
+        // Validate by* arrays
+        const validateArray = (arr, min, max) => {
+            return arr.filter(v => v >= min && v <= max);
+        };
+
+        rule.byMonth = validateArray(rule.byMonth || [], 1, 12);
+        rule.byMonthDay = validateArray(rule.byMonthDay || [], -31, 31).filter(v => v !== 0);
+        rule.byYearDay = validateArray(rule.byYearDay || [], -366, 366).filter(v => v !== 0);
+        rule.byWeekNo = validateArray(rule.byWeekNo || [], -53, 53).filter(v => v !== 0);
+        rule.byHour = validateArray(rule.byHour || [], 0, 23);
+        rule.byMinute = validateArray(rule.byMinute || [], 0, 59);
+        rule.bySecond = validateArray(rule.bySecond || [], 0, 59);
+
+        return rule;
+    }
+
+    /**
+     * Build RRULE string from rule object
+     * @param {Object} rule - Rule object
+     * @returns {string} RRULE string
+     */
+    static buildRRule(rule) {
+        const parts = [];
+
+        // Required frequency
+        parts.push(`FREQ=${rule.freq}`);
+
+        // Optional interval
+        if (rule.interval && rule.interval > 1) {
+            parts.push(`INTERVAL=${rule.interval}`);
+        }
+
+        // Count or until
+        if (rule.count) {
+            parts.push(`COUNT=${rule.count}`);
+        } else if (rule.until) {
+            parts.push(`UNTIL=${this.formatDateTime(rule.until)}`);
+        }
+
+        // By* rules
+        if (rule.byDay && rule.byDay.length > 0) {
+            const dayStr = rule.byDay.map(d => {
+                return d.nth ? `${d.nth}${d.weekday}` : d.weekday;
+            }).join(',');
+            parts.push(`BYDAY=${dayStr}`);
+        }
+
+        if (rule.byMonth && rule.byMonth.length > 0) {
+            parts.push(`BYMONTH=${rule.byMonth.join(',')}`);
+        }
+
+        if (rule.byMonthDay && rule.byMonthDay.length > 0) {
+            parts.push(`BYMONTHDAY=${rule.byMonthDay.join(',')}`);
+        }
+
+        if (rule.byYearDay && rule.byYearDay.length > 0) {
+            parts.push(`BYYEARDAY=${rule.byYearDay.join(',')}`);
+        }
+
+        if (rule.byWeekNo && rule.byWeekNo.length > 0) {
+            parts.push(`BYWEEKNO=${rule.byWeekNo.join(',')}`);
+        }
+
+        if (rule.bySetPos && rule.bySetPos.length > 0) {
+            parts.push(`BYSETPOS=${rule.bySetPos.join(',')}`);
+        }
+
+        if (rule.byHour && rule.byHour.length > 0) {
+            parts.push(`BYHOUR=${rule.byHour.join(',')}`);
+        }
+
+        if (rule.byMinute && rule.byMinute.length > 0) {
+            parts.push(`BYMINUTE=${rule.byMinute.join(',')}`);
+        }
+
+        if (rule.bySecond && rule.bySecond.length > 0) {
+            parts.push(`BYSECOND=${rule.bySecond.join(',')}`);
+        }
+
+        // Week start
+        if (rule.wkst && rule.wkst !== 'MO') {
+            parts.push(`WKST=${rule.wkst}`);
+        }
+
+        return parts.join(';');
+    }
+
+    /**
+     * Format date/datetime for RRULE
+     * @private
+     */
+    static formatDateTime(date) {
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hour = String(date.getUTCHours()).padStart(2, '0');
+        const minute = String(date.getUTCMinutes()).padStart(2, '0');
+        const second = String(date.getUTCSeconds()).padStart(2, '0');
+
+        return `${year}${month}${day}T${hour}${minute}${second}Z`;
+    }
+
+    /**
+     * Get human-readable description of rule
+     * @param {Object} rule - Parsed rule object
+     * @returns {string} Human-readable description
+     */
+    static getDescription(rule) {
+        const freqMap = {
+            'SECONDLY': 'second',
+            'MINUTELY': 'minute',
+            'HOURLY': 'hour',
+            'DAILY': 'day',
+            'WEEKLY': 'week',
+            'MONTHLY': 'month',
+            'YEARLY': 'year'
+        };
+
+        const weekdayMap = {
+            'SU': 'Sunday',
+            'MO': 'Monday',
+            'TU': 'Tuesday',
+            'WE': 'Wednesday',
+            'TH': 'Thursday',
+            'FR': 'Friday',
+            'SA': 'Saturday'
+        };
+
+        const nthMap = {
+            1: 'first',
+            2: 'second',
+            3: 'third',
+            4: 'fourth',
+            5: 'fifth',
+            '-1': 'last',
+            '-2': 'second to last'
+        };
+
+        let description = 'Every';
+
+        // Interval
+        if (rule.interval > 1) {
+            description += ` ${rule.interval}`;
+        }
+
+        // Frequency
+        description += ` ${freqMap[rule.freq]}`;
+        if (rule.interval > 1) {
+            description += 's';
+        }
+
+        // By day
+        if (rule.byDay && rule.byDay.length > 0) {
+            if (rule.freq === 'WEEKLY') {
+                const days = rule.byDay.map(d => weekdayMap[d.weekday]).join(', ');
+                description += ` on ${days}`;
+            } else if (rule.freq === 'MONTHLY' || rule.freq === 'YEARLY') {
+                const dayDescs = rule.byDay.map(d => {
+                    if (d.nth) {
+                        return `the ${nthMap[d.nth] || d.nth} ${weekdayMap[d.weekday]}`;
+                    }
+                    return weekdayMap[d.weekday];
+                }).join(', ');
+                description += ` on ${dayDescs}`;
+            }
+        }
+
+        // By month day
+        if (rule.byMonthDay && rule.byMonthDay.length > 0) {
+            const days = rule.byMonthDay.map(d => {
+                if (d < 0) {
+                    return `${Math.abs(d)} day(s) from the end`;
+                }
+                return `day ${d}`;
+            }).join(', ');
+            description += ` on ${days}`;
+        }
+
+        // By month
+        if (rule.byMonth && rule.byMonth.length > 0) {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            const months = rule.byMonth.map(m => monthNames[m - 1]).join(', ');
+            description += ` in ${months}`;
+        }
+
+        // Count or until
+        if (rule.count) {
+            description += `, ${rule.count} time${rule.count > 1 ? 's' : ''}`;
+        } else if (rule.until) {
+            description += `, until ${rule.until.toLocaleDateString()}`;
+        }
+
+        return description;
+    }
+}
+
+/**
  * RecurrenceEngine - Handles expansion of recurring events
- * Supports a subset of RFC 5545 (iCalendar) RRULE specification
+ * Full support for RFC 5545 (iCalendar) RRULE specification
  */
 class RecurrenceEngine {
   /**
@@ -1909,54 +2655,8 @@ class RecurrenceEngine {
    * @returns {import('../../types.js').RecurrenceRule} Parsed rule object
    */
   static parseRule(ruleString) {
-    const rule = {
-      freq: null,
-      interval: 1,
-      count: null,
-      until: null,
-      byDay: [],
-      byMonthDay: [],
-      byMonth: [],
-      bySetPos: [],
-      exceptions: []
-    };
-
-    if (typeof ruleString === 'object') {
-      return { ...rule, ...ruleString };
-    }
-
-    const parts = ruleString.split(';');
-    parts.forEach(part => {
-      const [key, value] = part.split('=');
-      switch (key.toUpperCase()) {
-        case 'FREQ':
-          rule.freq = value.toUpperCase();
-          break;
-        case 'INTERVAL':
-          rule.interval = parseInt(value, 10);
-          break;
-        case 'COUNT':
-          rule.count = parseInt(value, 10);
-          break;
-        case 'UNTIL':
-          rule.until = this.parseDate(value);
-          break;
-        case 'BYDAY':
-          rule.byDay = value.split(',');
-          break;
-        case 'BYMONTHDAY':
-          rule.byMonthDay = value.split(',').map(d => parseInt(d, 10));
-          break;
-        case 'BYMONTH':
-          rule.byMonth = value.split(',').map(m => parseInt(m, 10));
-          break;
-        case 'BYSETPOS':
-          rule.bySetPos = value.split(',').map(p => parseInt(p, 10));
-          break;
-      }
-    });
-
-    return rule;
+    // Use the new comprehensive parser
+    return RRuleParser.parse(ruleString);
   }
 
   /**
@@ -2370,8 +3070,342 @@ class LRUCache {
 }
 
 /**
+ * AdaptiveMemoryManager - Dynamically manages cache sizes based on memory pressure
+ * Monitors memory usage and adjusts cache capacity to prevent memory issues
+ */
+
+class AdaptiveMemoryManager {
+    constructor(config = {}) {
+        this.config = {
+            checkInterval: 30000, // Check memory every 30 seconds
+            memoryThreshold: 0.8, // Start reducing cache at 80% memory usage
+            criticalThreshold: 0.95, // Emergency clear at 95% memory usage
+            minCacheSize: 10, // Minimum cache size to maintain
+            maxCacheSize: 10000, // Maximum cache size allowed
+            adaptiveScaling: true, // Enable/disable adaptive scaling
+            ...config
+        };
+
+        // Cache references
+        this.caches = new Map();
+
+        // Memory statistics
+        this.stats = {
+            adjustments: 0,
+            emergencyClears: 0,
+            lastMemoryUsage: 0,
+            lastCheckTime: null,
+            cacheResizes: []
+        };
+
+        // Start monitoring if enabled
+        this.monitoringInterval = null;
+        if (this.config.adaptiveScaling) {
+            this.startMonitoring();
+        }
+    }
+
+    /**
+     * Register a cache for management
+     * @param {string} name - Cache identifier
+     * @param {Object} cache - Cache instance with size/clear methods
+     * @param {Object} [options] - Cache-specific options
+     */
+    registerCache(name, cache, options = {}) {
+        this.caches.set(name, {
+            cache,
+            priority: options.priority || 1, // Higher priority = less likely to be reduced
+            currentCapacity: options.initialCapacity || 100,
+            minCapacity: options.minCapacity || this.config.minCacheSize,
+            maxCapacity: options.maxCapacity || this.config.maxCacheSize,
+            scaleFactor: options.scaleFactor || 0.5, // How much to reduce on pressure
+            lastAccess: Date.now()
+        });
+    }
+
+    /**
+     * Unregister a cache
+     * @param {string} name - Cache identifier
+     */
+    unregisterCache(name) {
+        this.caches.delete(name);
+    }
+
+    /**
+     * Start memory monitoring
+     */
+    startMonitoring() {
+        if (this.monitoringInterval) {
+            return;
+        }
+
+        this.monitoringInterval = setInterval(() => {
+            this.checkMemoryPressure();
+        }, this.config.checkInterval);
+
+        // Initial check
+        this.checkMemoryPressure();
+    }
+
+    /**
+     * Stop memory monitoring
+     */
+    stopMonitoring() {
+        if (this.monitoringInterval) {
+            clearInterval(this.monitoringInterval);
+            this.monitoringInterval = null;
+        }
+    }
+
+    /**
+     * Check memory pressure and adjust caches
+     */
+    async checkMemoryPressure() {
+        const memoryUsage = await this.getMemoryUsage();
+        this.stats.lastMemoryUsage = memoryUsage;
+        this.stats.lastCheckTime = new Date();
+
+        if (memoryUsage > this.config.criticalThreshold) {
+            // Emergency clear - clear all caches
+            this.emergencyClear();
+        } else if (memoryUsage > this.config.memoryThreshold) {
+            // Memory pressure - reduce cache sizes
+            this.reduceCacheSizes(memoryUsage);
+        } else if (memoryUsage < this.config.memoryThreshold - 0.2) {
+            // Memory available - can increase cache sizes
+            this.increaseCacheSizes();
+        }
+    }
+
+    /**
+     * Get current memory usage percentage
+     * @returns {Promise<number>} Memory usage as percentage (0-1)
+     */
+    async getMemoryUsage() {
+        // Browser environment
+        if (typeof performance !== 'undefined' && performance.memory) {
+            const memInfo = performance.memory;
+            if (memInfo.jsHeapSizeLimit && memInfo.usedJSHeapSize) {
+                return memInfo.usedJSHeapSize / memInfo.jsHeapSizeLimit;
+            }
+        }
+
+        // Node.js environment
+        if (typeof process !== 'undefined' && process.memoryUsage) {
+            const usage = process.memoryUsage();
+            // Use heap total as the limit in Node.js
+            return usage.heapUsed / usage.heapTotal;
+        }
+
+        // Fallback - estimate based on cache sizes
+        return this.estimateMemoryUsage();
+    }
+
+    /**
+     * Estimate memory usage based on cache sizes
+     * @private
+     */
+    estimateMemoryUsage() {
+        let totalItems = 0;
+        let maxItems = 0;
+
+        for (const [_, cacheInfo] of this.caches) {
+            if (cacheInfo.cache.size !== undefined) {
+                totalItems += cacheInfo.cache.size;
+                maxItems += cacheInfo.maxCapacity;
+            }
+        }
+
+        return maxItems > 0 ? totalItems / maxItems : 0.5;
+    }
+
+    /**
+     * Reduce cache sizes based on memory pressure
+     * @param {number} memoryUsage - Current memory usage percentage
+     */
+    reduceCacheSizes(memoryUsage) {
+        const pressureLevel = (memoryUsage - this.config.memoryThreshold) /
+                            (this.config.criticalThreshold - this.config.memoryThreshold);
+
+        // Sort caches by priority (lower priority first)
+        const sortedCaches = Array.from(this.caches.entries())
+            .sort((a, b) => a[1].priority - b[1].priority);
+
+        for (const [name, cacheInfo] of sortedCaches) {
+            const reduction = Math.floor(cacheInfo.currentCapacity * cacheInfo.scaleFactor * pressureLevel);
+            const newCapacity = Math.max(
+                cacheInfo.minCapacity,
+                cacheInfo.currentCapacity - reduction
+            );
+
+            if (newCapacity < cacheInfo.currentCapacity) {
+                this.resizeCache(name, cacheInfo, newCapacity);
+            }
+        }
+
+        this.stats.adjustments++;
+    }
+
+    /**
+     * Increase cache sizes when memory is available
+     */
+    increaseCacheSizes() {
+        for (const [name, cacheInfo] of this.caches) {
+            // Only increase if cache is being actively used
+            const timeSinceAccess = Date.now() - cacheInfo.lastAccess;
+            if (timeSinceAccess < 60000) { // Used in last minute
+                const increase = Math.floor(cacheInfo.currentCapacity * 0.2);
+                const newCapacity = Math.min(
+                    cacheInfo.maxCapacity,
+                    cacheInfo.currentCapacity + increase
+                );
+
+                if (newCapacity > cacheInfo.currentCapacity) {
+                    this.resizeCache(name, cacheInfo, newCapacity);
+                }
+            }
+        }
+    }
+
+    /**
+     * Resize a cache
+     * @private
+     */
+    resizeCache(name, cacheInfo, newCapacity) {
+        const oldCapacity = cacheInfo.currentCapacity;
+        cacheInfo.currentCapacity = newCapacity;
+
+        // If cache has a capacity property, update it
+        if (cacheInfo.cache.capacity !== undefined) {
+            cacheInfo.cache.capacity = newCapacity;
+        }
+
+        // If cache is now over capacity, evict excess items
+        if (cacheInfo.cache.size > newCapacity) {
+            this.evictExcessItems(cacheInfo.cache, newCapacity);
+        }
+
+        // Record resize event
+        this.stats.cacheResizes.push({
+            cache: name,
+            timestamp: new Date(),
+            oldCapacity,
+            newCapacity,
+            reason: newCapacity < oldCapacity ? 'pressure' : 'available'
+        });
+
+        // Keep only last 100 resize events
+        if (this.stats.cacheResizes.length > 100) {
+            this.stats.cacheResizes.shift();
+        }
+    }
+
+    /**
+     * Evict excess items from cache
+     * @private
+     */
+    evictExcessItems(cache, targetSize) {
+        if (cache.size <= targetSize) {
+            return;
+        }
+
+        const itemsToRemove = cache.size - targetSize;
+
+        // If cache is a Map or has keys method
+        if (cache.keys) {
+            const keys = Array.from(cache.keys());
+            for (let i = 0; i < itemsToRemove; i++) {
+                cache.delete(keys[i]);
+            }
+        } else if (cache.clear) {
+            // Last resort - clear the cache
+            cache.clear();
+        }
+    }
+
+    /**
+     * Emergency clear all caches
+     */
+    emergencyClear() {
+        for (const [name, cacheInfo] of this.caches) {
+            if (cacheInfo.cache.clear) {
+                cacheInfo.cache.clear();
+            }
+            // Reset to minimum capacity
+            cacheInfo.currentCapacity = cacheInfo.minCapacity;
+        }
+
+        this.stats.emergencyClears++;
+        console.warn('AdaptiveMemoryManager: Emergency cache clear triggered');
+    }
+
+    /**
+     * Update cache access time
+     * @param {string} name - Cache name
+     */
+    touchCache(name) {
+        const cacheInfo = this.caches.get(name);
+        if (cacheInfo) {
+            cacheInfo.lastAccess = Date.now();
+        }
+    }
+
+    /**
+     * Get memory management statistics
+     * @returns {Object} Statistics object
+     */
+    getStats() {
+        const cacheStats = {};
+        for (const [name, cacheInfo] of this.caches) {
+            cacheStats[name] = {
+                size: cacheInfo.cache.size || 0,
+                capacity: cacheInfo.currentCapacity,
+                priority: cacheInfo.priority,
+                lastAccess: new Date(cacheInfo.lastAccess)
+            };
+        }
+
+        return {
+            ...this.stats,
+            memoryUsagePercent: `${(this.stats.lastMemoryUsage * 100).toFixed(2)}%`,
+            totalCaches: this.caches.size,
+            cacheStats,
+            monitoring: this.monitoringInterval !== null
+        };
+    }
+
+    /**
+     * Manual trigger for memory pressure check
+     */
+    async checkNow() {
+        await this.checkMemoryPressure();
+    }
+
+    /**
+     * Set memory thresholds
+     * @param {Object} thresholds - New threshold values
+     */
+    setThresholds(thresholds) {
+        if (thresholds.memoryThreshold !== undefined) {
+            this.config.memoryThreshold = Math.max(0.5, Math.min(0.95, thresholds.memoryThreshold));
+        }
+        if (thresholds.criticalThreshold !== undefined) {
+            this.config.criticalThreshold = Math.max(this.config.memoryThreshold + 0.05, Math.min(1.0, thresholds.criticalThreshold));
+        }
+    }
+
+    /**
+     * Destroy manager and clean up
+     */
+    destroy() {
+        this.stopMonitoring();
+        this.caches.clear();
+    }
+}
+
+/**
  * PerformanceOptimizer - Optimizes calendar operations for large datasets
- * Includes caching, lazy loading, and batch processing
+ * Includes caching, lazy loading, and batch processing with adaptive memory management
  */
 
 
@@ -2386,13 +3420,45 @@ class PerformanceOptimizer {
       enableMetrics: true,
       cleanupInterval: 3600000, // 1 hour in ms
       maxIndexAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
+      enableAdaptiveMemory: true, // Enable adaptive memory management
       ...config
     };
 
-    // Caches
+    // Caches with initial capacities
     this.eventCache = new LRUCache(this.config.cacheCapacity);
     this.queryCache = new LRUCache(Math.floor(this.config.cacheCapacity / 2));
     this.dateRangeCache = new LRUCache(Math.floor(this.config.cacheCapacity / 4));
+
+    // Adaptive memory manager
+    if (this.config.enableAdaptiveMemory) {
+      this.memoryManager = new AdaptiveMemoryManager({
+        checkInterval: 30000,
+        memoryThreshold: 0.75,
+        criticalThreshold: 0.90
+      });
+
+      // Register caches with memory manager
+      this.memoryManager.registerCache('events', this.eventCache, {
+        priority: 3, // Highest priority
+        initialCapacity: this.config.cacheCapacity,
+        minCapacity: 50,
+        maxCapacity: 2000
+      });
+
+      this.memoryManager.registerCache('queries', this.queryCache, {
+        priority: 2,
+        initialCapacity: Math.floor(this.config.cacheCapacity / 2),
+        minCapacity: 25,
+        maxCapacity: 1000
+      });
+
+      this.memoryManager.registerCache('dateRanges', this.dateRangeCache, {
+        priority: 1,
+        initialCapacity: Math.floor(this.config.cacheCapacity / 4),
+        minCapacity: 10,
+        maxCapacity: 500
+      });
+    }
 
     // Lazy loading tracking
     this.lazyIndexes = new Map(); // eventId -> Set of date strings
@@ -2522,7 +3588,8 @@ class PerformanceOptimizer {
       },
       operations: {},
       slowestOperations: [],
-      recentSlowQueries: this.metrics.slowQueries.slice(-10)
+      recentSlowQueries: this.metrics.slowQueries.slice(-10),
+      memoryManagement: this.memoryManager ? this.memoryManager.getStats() : null
     };
 
     // Process operations
@@ -2651,16 +3718,31 @@ class PerformanceOptimizer {
   cache(key, value, cacheType = 'event') {
     if (!this.config.enableCache) return;
 
+    let cache;
+    let cacheManagerName;
+
     switch (cacheType) {
       case 'event':
-        this.eventCache.put(key, value);
+        cache = this.eventCache;
+        cacheManagerName = 'events';
         break;
       case 'query':
-        this.queryCache.put(key, value);
+        cache = this.queryCache;
+        cacheManagerName = 'queries';
         break;
       case 'dateRange':
-        this.dateRangeCache.put(key, value);
+        cache = this.dateRangeCache;
+        cacheManagerName = 'dateRanges';
         break;
+      default:
+        return;
+    }
+
+    cache.put(key, value);
+
+    // Update access time in memory manager
+    if (this.memoryManager) {
+      this.memoryManager.touchCache(cacheManagerName);
     }
   }
 
@@ -2673,16 +3755,32 @@ class PerformanceOptimizer {
   getFromCache(key, cacheType = 'event') {
     if (!this.config.enableCache) return undefined;
 
+    let result;
+    let cacheManagerName;
+
     switch (cacheType) {
       case 'event':
-        return this.eventCache.get(key);
+        result = this.eventCache.get(key);
+        cacheManagerName = 'events';
+        break;
       case 'query':
-        return this.queryCache.get(key);
+        result = this.queryCache.get(key);
+        cacheManagerName = 'queries';
+        break;
       case 'dateRange':
-        return this.dateRangeCache.get(key);
+        result = this.dateRangeCache.get(key);
+        cacheManagerName = 'dateRanges';
+        break;
       default:
         return undefined;
     }
+
+    // Update access time on cache hit
+    if (result !== undefined && this.memoryManager) {
+      this.memoryManager.touchCache(cacheManagerName);
+    }
+
+    return result;
   }
 
   /**
