@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Calendar Core - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 2rem;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        .version {
+            display: inline-block;
+            background: #f0f4f8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+        p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+        .links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .link.secondary {
+            background: #f0f4f8;
+            color: #667eea;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .feature {
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        .feature h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .feature p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        code {
+            background: #f0f4f8;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+        }
+        .install {
+            background: #1a202c;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+        .install code {
+            background: transparent;
+            color: #68d391;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Force Calendar Core</h1>
+        <span class="version">v0.3.0</span>
+
+        <p>
+            A modern, lightweight, framework-agnostic calendar engine optimized for Salesforce.
+            Built with performance and flexibility in mind.
+        </p>
+
+        <div class="links">
+            <a href="https://www.npmjs.com/package/@forcecalendar/core" class="link">
+                📦 NPM Package
+            </a>
+            <a href="https://github.com/forceCalendar/force-calendar-core" class="link">
+                🐙 GitHub
+            </a>
+            <a href="https://forcecalendar.org" class="link secondary">
+                🏠 Main Site
+            </a>
+        </div>
+
+        <div class="install">
+            <code>npm install @forcecalendar/core</code>
+        </div>
+
+        <h2 style="margin: 2rem 0 1rem; color: #333;">Core Features</h2>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🚀 High Performance</h3>
+                <p>O(1) event lookups with spatial indexing for date queries</p>
+            </div>
+            <div class="feature">
+                <h3>🌍 Timezone Support</h3>
+                <p>Full IANA timezone database with DST handling</p>
+            </div>
+            <div class="feature">
+                <h3>📅 RFC 5545 Compliant</h3>
+                <p>Complete RRULE support for complex recurrence patterns</p>
+            </div>
+            <div class="feature">
+                <h3>☁️ Salesforce Ready</h3>
+                <p>Locker Service compatible, no DOM dependencies</p>
+            </div>
+            <div class="feature">
+                <h3>📦 Framework Agnostic</h3>
+                <p>Works with React, Vue, Angular, or vanilla JS</p>
+            </div>
+            <div class="feature">
+                <h3>🔄 ICS Import/Export</h3>
+                <p>Exchange calendar data with any system</p>
+            </div>
+        </div>
+
+        <h2 style="margin: 2rem 0 1rem; color: #333;">Quick Start</h2>
+
+        <pre style="background: #1a202c; color: #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto;">
+<code>import { Calendar, Event } from '@forcecalendar/core';
+
+// Create a calendar
+const calendar = new Calendar({
+  timeZone: 'America/New_York'
+});
+
+// Add an event
+calendar.addEvent({
+  id: 'meeting-1',
+  title: 'Team Standup',
+  start: new Date('2025-01-15T10:00:00'),
+  end: new Date('2025-01-15T10:30:00'),
+  category: 'meeting'
+});
+
+// Query events
+const events = calendar.getEventsForDay(new Date());
+</code></pre>
+
+        <p style="margin-top: 2rem; text-align: center; color: #999; font-size: 0.875rem;">
+            Made with ❤️ for the Salesforce community
+        </p>
+    </div>
+</body>
+</html>
