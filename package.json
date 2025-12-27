@@ -1,6 +1,6 @@
 {
   "name": "@forcecalendar/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "private": false,
   "description": "A modern, lightweight, framework-agnostic calendar engine optimized for Salesforce",
@@ -14,13 +14,13 @@
     "test:search": "node tests/integration/test-search.js"
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./month-view": "./dist/views/month.esm.js",
-    "./week-view": "./dist/views/week.esm.js",
-    "./day-view": "./dist/views/day.esm.js"
+    ".": "./core/index.js",
+    "./calendar": "./core/calendar/Calendar.js",
+    "./events": "./core/events/Event.js",
+    "./state": "./core/state/StateManager.js",
+    "./search": "./core/search/EventSearch.js",
+    "./ics": "./core/ics/ICSHandler.js",
+    "./types": "./core/types.js"
   },
   "repository": {
     "type": "git",
@@ -73,7 +73,9 @@
     }
   },
   "files": [
-    "dist",
+    "core/**/*.js",
+    "!core/**/*.test.js",
+    "!core/**/*.spec.js",
     "README.md",
     "LICENSE"
   ]
