@@ -972,54 +972,28 @@ app.post('/api/events', (req, res) => {
         </main>
     </div>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-brand">
-                <h3><em>force</em><strong>Calendar</strong> <span class="core-badge" style="font-size: 0.75rem;">Core</span></h3>
-                <p>
-                    A high-performance calendar engine built for enterprise constraints.
-                    Zero DOM dependencies, complete separation of logic and UI,
-                    designed for platforms like Salesforce where traditional libraries fail.
-                </p>
-            </div>
-
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="index.html">Overview</a></li>
-                    <li><a href="https://github.com/ForceCalendar/force-calendar-core" target="_blank" rel="noopener noreferrer">GitHub →</a></li>
-                    <li><a href="https://www.npmjs.com/package/@forcecalendar/core" target="_blank" rel="noopener noreferrer">NPM Package →</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h4>Community</h4>
-                <ul>
-                    <li><a href="https://github.com/ForceCalendar/force-calendar-core/issues" target="_blank" rel="noopener noreferrer">Report Issue →</a></li>
-                    <li><a href="https://github.com/ForceCalendar/force-calendar-core/discussions" target="_blank" rel="noopener noreferrer">Discussions →</a></li>
-                    <li><a href="https://github.com/ForceCalendar/force-calendar-core/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing →</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h4>forceCalendar Family</h4>
-                <ul>
-                    <li><a href="#">Core (Engine)</a></li>
-                    <li><a href="#" style="opacity: 0.5;">UI Components <small>(soon)</small></a></li>
-                    <li><a href="#" style="opacity: 0.5;">Salesforce LWC <small>(soon)</small></a></li>
-                </ul>
-            </div>
+    <footer style="text-align: center; padding: 3rem 2rem; margin-top: 6rem; border-top: 1px solid var(--border);">
+        <div style="margin-bottom: 1rem;">
+            <span style="font-size: 1.125rem; font-weight: 200;"><em style="font-style: italic; font-family: Georgia, serif;">force</em><strong style="font-weight: 700;">Calendar</strong></span>
+            <span class="core-badge" style="font-size: 0.75rem; margin-left: 0.5rem;">Core</span>
         </div>
-
-        <div class="footer-bottom">
-            <div class="footer-bottom-content">
-                <div>© 2024 forceCalendar • Built for Enterprise Constraints</div>
-                <div>
-                    <a href="https://github.com/ForceCalendar/force-calendar-core/blob/master/LICENSE" target="_blank" rel="noopener noreferrer" style="color: var(--gray); text-decoration: none; transition: color 0.3s;">
-                        MIT License
-                    </a>
-                </div>
-            </div>
+        <p style="color: var(--gray); font-size: 0.875rem; margin-bottom: 1.5rem;">
+            Built in 2025 for enterprise constraints
+        </p>
+        <div style="display: flex; gap: 2rem; justify-content: center; align-items: center;">
+            <a href="index.html" style="color: var(--gray); text-decoration: none; font-size: 0.875rem;">
+                Overview
+            </a>
+            <span style="color: var(--border);">•</span>
+            <a href="https://github.com/ForceCalendar/force-calendar-core" target="_blank" rel="noopener noreferrer" style="color: var(--gray); text-decoration: none;">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+            </a>
+            <span style="color: var(--border);">•</span>
+            <a href="https://www.npmjs.com/package/@forcecalendar/core" target="_blank" rel="noopener noreferrer" style="color: var(--gray); text-decoration: none; font-size: 0.875rem;">
+                npm: @forcecalendar/core
+            </a>
         </div>
     </footer>
 </body>
