@@ -15,11 +15,11 @@ export class Event {
   static normalize(data) {
     const normalized = { ...data };
 
-    // Ensure dates are Date objects
-    if (normalized.start && !(normalized.start instanceof Date)) {
+    // Always clone Date objects to avoid mutating caller's data
+    if (normalized.start) {
       normalized.start = new Date(normalized.start);
     }
-    if (normalized.end && !(normalized.end instanceof Date)) {
+    if (normalized.end) {
       normalized.end = new Date(normalized.end);
     }
 
@@ -29,6 +29,7 @@ export class Event {
     }
 
     // For all-day events, normalize times to midnight
+    // (safe to mutate now since we cloned above)
     if (normalized.allDay && normalized.start) {
       normalized.start.setHours(0, 0, 0, 0);
       if (normalized.end) {

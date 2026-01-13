@@ -265,6 +265,11 @@ export class RRuleParser {
         // By* rules
         if (rule.byDay && rule.byDay.length > 0) {
             const dayStr = rule.byDay.map(d => {
+                // Handle both string format ('MO', '2TU', '-1FR') from parseByDay
+                // and object format ({nth: 2, weekday: 'MO'})
+                if (typeof d === 'string') {
+                    return d;
+                }
                 return d.nth ? `${d.nth}${d.weekday}` : d.weekday;
             }).join(',');
             parts.push(`BYDAY=${dayStr}`);
@@ -374,17 +379,30 @@ export class RRuleParser {
             description += 's';
         }
 
-        // By day
+        // By day - handle both string format ('MO', '2TU') and object format ({nth, weekday})
         if (rule.byDay && rule.byDay.length > 0) {
+            // Helper to extract weekday and nth from string or object
+            const parseDay = (d) => {
+                if (typeof d === 'string') {
+                    const match = d.match(/^(-?\d+)?([A-Z]{2})$/);
+                    if (match) {
+                        return { nth: match[1] ? parseInt(match[1], 10) : null, weekday: match[2] };
+                    }
+                    return { nth: null, weekday: d };
+                }
+                return d;
+            };
+
             if (rule.freq === 'WEEKLY') {
-                const days = rule.byDay.map(d => weekdayMap[d.weekday]).join(', ');
+                const days = rule.byDay.map(d => weekdayMap[parseDay(d).weekday]).join(', ');
                 description += ` on ${days}`;
             } else if (rule.freq === 'MONTHLY' || rule.freq === 'YEARLY') {
                 const dayDescs = rule.byDay.map(d => {
-                    if (d.nth) {
-                        return `the ${nthMap[d.nth] || d.nth} ${weekdayMap[d.weekday]}`;
+                    const parsed = parseDay(d);
+                    if (parsed.nth) {
+                        return `the ${nthMap[parsed.nth] || parsed.nth} ${weekdayMap[parsed.weekday]}`;
                     }
-                    return weekdayMap[d.weekday];
+                    return weekdayMap[parsed.weekday];
                 }).join(', ');
                 description += ` on ${dayDescs}`;
             }

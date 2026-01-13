@@ -505,8 +505,10 @@ export class StateManager {
       this.history = this.history.slice(0, this.historyIndex + 1);
     }
 
-    // Add new state
-    this.history.push({ ...state });
+    // Deep clone state to prevent shared references in history
+    // (shallow copy would share nested objects like filters, businessHours, metadata)
+    const clonedState = this._deepClone(state);
+    this.history.push(clonedState);
     this.historyIndex++;
 
     // Limit history size
@@ -514,6 +516,32 @@ export class StateManager {
       this.history.shift();
       this.historyIndex--;
     }
+  }
+
+  /**
+   * Deep clone a value for history storage
+   * @private
+   */
+  _deepClone(value) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    if (value instanceof Date) {
+      return new Date(value);
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(item => this._deepClone(item));
+    }
+
+    const cloned = {};
+    for (const key in value) {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        cloned[key] = this._deepClone(value[key]);
+      }
+    }
+    return cloned;
   }
 
   /**

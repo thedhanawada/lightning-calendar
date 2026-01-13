@@ -39,6 +39,11 @@ export class RecurrenceEngine {
     // Track DST transitions for proper timezone handling
     let lastOffset = tzManager.getTimezoneOffset(currentDate, eventTimezone);
 
+    // Track last date to detect infinite loop (date not advancing)
+    let lastDateTimestamp = null;
+    let stuckCount = 0;
+    const maxStuckIterations = 3;
+
     while (currentDate <= rangeEnd && count < maxOccurrences) {
       // Check if this occurrence is within the range
       if (currentDate >= rangeStart) {
@@ -68,8 +73,20 @@ export class RecurrenceEngine {
       }
 
       // Calculate next occurrence
+      const previousTimestamp = currentDate.getTime();
       currentDate = this.getNextOccurrence(currentDate, rule, eventTimezone);
       count++;
+
+      // Safeguard: detect if date is not advancing (infinite loop risk)
+      if (currentDate.getTime() === previousTimestamp) {
+        stuckCount++;
+        if (stuckCount >= maxStuckIterations) {
+          console.warn('RecurrenceEngine: Date not advancing, breaking to prevent infinite loop');
+          break;
+        }
+      } else {
+        stuckCount = 0;
+      }
 
       // Check COUNT limit
       if (rule.count && count >= rule.count) {
@@ -111,15 +128,17 @@ export class RecurrenceEngine {
           // Limit iterations to prevent infinite loop with malformed byDay
           const maxIterations = 8; // 7 days + 1 for safety
           let iterations = 0;
+          const originalDate = next.getDate();
           next.setDate(next.getDate() + 1);
           while (!this.matchesByDay(next, rule.byDay) && iterations < maxIterations) {
             next.setDate(next.getDate() + 1);
             iterations++;
           }
-          // If no match found, fall back to simple weekly interval
+          // If no match found, fall back to simple weekly interval from original date
           if (iterations >= maxIterations) {
             console.warn('RecurrenceEngine: Invalid byDay rule, falling back to weekly interval');
-            next.setDate(next.getDate() + (7 * rule.interval) - maxIterations);
+            // Reset to original and add weekly interval
+            next.setDate(originalDate + (7 * rule.interval));
           }
         } else {
           // Simple weekly recurrence
