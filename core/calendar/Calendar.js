@@ -15,8 +15,8 @@ export class Calendar {
    * @param {import('../../types.js').CalendarConfig} [config={}] - Configuration options
    */
   constructor(config = {}) {
-    // Initialize timezone manager first
-    this.timezoneManager = new TimezoneManager();
+    // Initialize timezone manager first (use singleton to share cache)
+    this.timezoneManager = TimezoneManager.getInstance();
 
     // Initialize configuration
     this.config = {

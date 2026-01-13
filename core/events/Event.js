@@ -221,8 +221,9 @@ export class Event {
     this.id = normalized.id;
     this.title = normalized.title;
 
-    // Initialize timezone manager
-    this._timezoneManager = new TimezoneManager();
+    // Use shared timezone manager singleton to avoid memory bloat
+    // (previously each Event created its own TimezoneManager instance)
+    this._timezoneManager = TimezoneManager.getInstance();
 
     // Timezone handling
     // Store the timezone the event was created in (wall-clock time)

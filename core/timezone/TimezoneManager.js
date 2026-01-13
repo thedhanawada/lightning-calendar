@@ -7,7 +7,33 @@
 
 import { TimezoneDatabase } from './TimezoneDatabase.js';
 
+// Singleton instance for shared use across the application
+let sharedInstance = null;
+
 export class TimezoneManager {
+    /**
+     * Get the shared singleton instance of TimezoneManager
+     * This should be used instead of creating new instances to avoid memory bloat
+     * @returns {TimezoneManager} The shared instance
+     */
+    static getInstance() {
+        if (!sharedInstance) {
+            sharedInstance = new TimezoneManager();
+        }
+        return sharedInstance;
+    }
+
+    /**
+     * Reset the singleton instance (useful for testing)
+     * @private
+     */
+    static _resetInstance() {
+        if (sharedInstance) {
+            sharedInstance.clearCache();
+        }
+        sharedInstance = null;
+    }
+
     constructor() {
         // Initialize comprehensive timezone database
         this.database = new TimezoneDatabase();

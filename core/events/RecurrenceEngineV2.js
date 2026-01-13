@@ -8,7 +8,8 @@ import { RRuleParser } from './RRuleParser.js';
 
 export class RecurrenceEngineV2 {
     constructor() {
-        this.tzManager = new TimezoneManager();
+        // Use singleton to share cache across all components
+        this.tzManager = TimezoneManager.getInstance();
 
         // Cache for expanded occurrences
         this.occurrenceCache = new Map();

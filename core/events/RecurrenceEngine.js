@@ -25,7 +25,7 @@ export class RecurrenceEngine {
     const occurrences = [];
     const duration = event.end - event.start;
     const eventTimezone = timezone || event.timeZone || 'UTC';
-    const tzManager = new TimezoneManager();
+    const tzManager = TimezoneManager.getInstance();
 
     // Work in event's timezone for accurate recurrence calculation
     let currentDate = new Date(event.start);

@@ -30,8 +30,8 @@ export class EventStore {
       byStatus: new Map()
     };
 
-    // Timezone manager for conversions
-    this.timezoneManager = new TimezoneManager();
+    // Timezone manager for conversions (use singleton to share cache)
+    this.timezoneManager = TimezoneManager.getInstance();
 
     // Default timezone for the store (can be overridden)
     this.defaultTimezone = config.timezone || this.timezoneManager.getSystemTimezone();
